@@ -71,6 +71,24 @@
           </div>
         </div>
         <div class="tut-item">
+          <div class="tut-emoji">🖍️</div>
+          <div>
+            <strong>Highlight key words</strong> in the question by clicking and dragging across text. A "Highlight" button appears — click it to mark the text yellow. Click "Clear" on a highlight to remove it.
+          </div>
+        </div>
+        <div class="tut-item">
+          <div class="tut-emoji">📝</div>
+          <div>
+            <strong>Scratchpad</strong> (top-right button) — pop open a notes pad to work through subnetting math, compare options, or jot down thoughts. Persists across the whole exam.
+          </div>
+        </div>
+        <div class="tut-item">
+          <div class="tut-emoji">⌨️</div>
+          <div>
+            <strong>Keyboard shortcuts:</strong> press <kbd>1</kbd>–<kbd>5</kbd> to pick an option, <kbd>F</kbd> to flag, <kbd>S</kbd> to open strike menu, <kbd>N</kbd>/<kbd>P</kbd> for next/previous, <kbd>R</kbd> to open the review screen.
+          </div>
+        </div>
+        <div class="tut-item">
           <div class="tut-emoji">🎯</div>
           <div>
             <strong>Submit Exam</strong> requires double-confirmation. Anything left blank counts as wrong.
@@ -111,9 +129,43 @@
     </div>
   </div>
   <div class="right">
+    <button class="btn btn-ghost" id="scratchpad-toggle" title="Open scratchpad (notes)" onclick="toggleScratchpad()">📝 Notes</button>
     <div>Time remaining</div>
     <div class="timer" id="exam-timer">--:--</div>
     <button class="btn btn-danger" onclick="confirmSubmit()">Submit Exam</button>
+  </div>
+</div>
+
+<!-- Floating highlight popover — appears near a text selection inside the
+     question stem to let the student mark key words. -->
+<div id="highlight-popover" class="highlight-popover" style="display:none">
+  <button onclick="applyHighlight()">🖍 Highlight</button>
+</div>
+
+<!-- Scratchpad panel (floating, fixed). Toggled via the Notes button. -->
+<div id="scratchpad-panel" class="scratchpad-panel" style="display:none">
+  <div class="scratchpad-header">
+    <span>📝 Scratchpad</span>
+    <button class="scratchpad-close" onclick="toggleScratchpad()" title="Close (Esc)">✕</button>
+  </div>
+  <textarea id="scratchpad-text" placeholder="Use this space for subnetting math, comparing answer options, jotting reminders, etc. Notes persist across the whole exam and are saved with your in-progress attempt."></textarea>
+  <div class="scratchpad-footer">
+    <small id="scratchpad-status">—</small>
+    <button onclick="clearScratchpad()">Clear all notes</button>
+  </div>
+</div>
+
+<!-- Reading-time warning: shown when the student picks an answer in under 8s
+     on a question they haven't flagged. -->
+<div id="reading-warn-modal" class="modal-mask">
+  <div class="modal">
+    <h3>Did you read the full question?</h3>
+    <p>You answered in under 8 seconds. That's faster than a careful read. Take a moment to confirm before moving on.</p>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="reading-warn-reread">Re-read it</button>
+      <button class="btn btn-ghost" id="reading-warn-flag">Flag &amp; keep answer</button>
+      <button class="btn btn-primary" id="reading-warn-confirm">Confirm my answer</button>
+    </div>
   </div>
 </div>
 

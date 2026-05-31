@@ -9,6 +9,8 @@ const ExamState = {
   answers: [],     // index of selected option per question, or null
   flagged: [],     // boolean per question
   struck: [],      // per-question struck-out option indices (real-exam strikethrough)
+  highlights: [],  // per-question array of {start, end} char offsets in the stem
+  scratchpad: '', // exam-wide notes pad
   qTimes: [],      // ms spent per question (accumulated)
   qEnteredAt: 0,   // wall-clock ms when current question was entered
   tabSwitches: 0,  // visibilitychange "hidden" count
@@ -46,6 +48,8 @@ function saveInProgress() {
       answers: ExamState.answers,
       flagged: ExamState.flagged,
       struck: ExamState.struck,
+      highlights: ExamState.highlights,
+      scratchpad: ExamState.scratchpad,
       qTimes: ExamState.qTimes,
       tabSwitches: ExamState.tabSwitches,
       warnedAt: ExamState.warnedAt,
@@ -205,11 +209,13 @@ window.addEventListener('DOMContentLoaded', () => {
     window._pendingResume = inProgress;
   }
 
-  ExamState.questions = selectQuestions(pool, ExamState.config);
-  ExamState.answers   = ExamState.questions.map(() => null);
-  ExamState.flagged   = ExamState.questions.map(() => false);
-  ExamState.struck    = ExamState.questions.map(() => []);
-  ExamState.qTimes    = ExamState.questions.map(() => 0);
+  ExamState.questions  = selectQuestions(pool, ExamState.config);
+  ExamState.answers    = ExamState.questions.map(() => null);
+  ExamState.flagged    = ExamState.questions.map(() => false);
+  ExamState.struck     = ExamState.questions.map(() => []);
+  ExamState.highlights = ExamState.questions.map(() => []);
+  ExamState.qTimes     = ExamState.questions.map(() => 0);
+  ExamState.scratchpad = '';
   ExamState.currentIdx = 0;
 
   // Populate splash with exam-specific values
@@ -296,15 +302,17 @@ function showResumeOption(snap) {
 function restoreInProgress(snap) {
   // Restore everything from the snapshot. The original endsAt is preserved
   // so the timer continues counting down from where it was.
-  ExamState.questions = snap.questions;
-  ExamState.answers   = snap.answers || ExamState.questions.map(() => null);
-  ExamState.flagged   = snap.flagged || ExamState.questions.map(() => false);
-  ExamState.struck    = snap.struck  || ExamState.questions.map(() => []);
-  ExamState.qTimes    = snap.qTimes  || ExamState.questions.map(() => 0);
+  ExamState.questions  = snap.questions;
+  ExamState.answers    = snap.answers  || ExamState.questions.map(() => null);
+  ExamState.flagged    = snap.flagged  || ExamState.questions.map(() => false);
+  ExamState.struck     = snap.struck   || ExamState.questions.map(() => []);
+  ExamState.highlights = snap.highlights || ExamState.questions.map(() => []);
+  ExamState.scratchpad = snap.scratchpad || '';
+  ExamState.qTimes     = snap.qTimes   || ExamState.questions.map(() => 0);
   ExamState.tabSwitches = snap.tabSwitches || 0;
-  ExamState.warnedAt  = snap.warnedAt || {};
-  ExamState.startedAt = snap.startedAt;
-  ExamState.endsAt    = snap.endsAt;
+  ExamState.warnedAt   = snap.warnedAt || {};
+  ExamState.startedAt  = snap.startedAt;
+  ExamState.endsAt     = snap.endsAt;
   ExamState.currentIdx = snap.currentIdx || 0;
 }
 
@@ -472,7 +480,17 @@ function renderQuestion() {
   // page. Hide the tag here for exam-realism. (Domains are still tracked
   // internally for scoring and the post-exam breakdown.)
   document.getElementById('q-domain').style.display = 'none';
-  document.getElementById('q-text').textContent = q.q;
+
+  // Render the question stem with any user-saved highlights re-applied.
+  const stemEl = document.getElementById('q-text');
+  stemEl.innerHTML = applyHighlightsToText(q.q, ExamState.highlights[idx] || []);
+  // Wire click-to-clear on existing highlights and listen for new selections.
+  stemEl.querySelectorAll('mark.user-hl').forEach(m => {
+    m.addEventListener('click', e => {
+      e.stopPropagation();
+      removeHighlightById(parseInt(m.dataset.hid, 10));
+    });
+  });
 
   // Exhibit — optional image/diagram attached to the question.
   // `q.image` can be either an inline SVG string or an image URL.
@@ -552,8 +570,18 @@ function renderSingle(q, container, answer, setAnswer) {
     btn.className = 'option-btn'
       + (answer === i ? ' selected' : '')
       + (isStruck ? ' struck' : '');
-    btn.innerHTML = '<span class="opt-letter">' + String.fromCharCode(65 + i) + '.</span> <span>' + escapeHtml(text) + '</span>';
-    btn.onclick = () => setter(i);
+    btn.innerHTML = '<span class="opt-letter">' + String.fromCharCode(65 + i) + '.</span> <span>' + escapeHtml(text) + '</span>'
+      + (isTopLevel ? '<span class="opt-strike-btn" title="' + (isStruck ? 'Un-strike (right-click also works)' : 'Cross out this option (right-click also works)') + '"></span>' : '');
+    btn.onclick = (ev) => {
+      // Click on the visible strike button toggles strike, NOT select
+      if (ev.target.classList.contains('opt-strike-btn')) {
+        ev.preventDefault(); ev.stopPropagation();
+        if (isTopLevel) toggleStrike(i);
+        return;
+      }
+      setter(i);
+      maybeReadingTimeWarn(i, setter);
+    };
     if (isTopLevel) {
       btn.addEventListener('contextmenu', (ev) => { ev.preventDefault(); toggleStrike(i); });
     }
@@ -603,8 +631,14 @@ function renderMulti(q, container, answer, setAnswer) {
     btn.innerHTML =
       '<span class="opt-check">' + (isOn ? '☑' : '☐') + '</span>' +
       '<span class="opt-letter">' + String.fromCharCode(65 + i) + '.</span> ' +
-      '<span>' + escapeHtml(text) + '</span>';
-    btn.onclick = () => {
+      '<span>' + escapeHtml(text) + '</span>'
+      + (isTopLevel ? '<span class="opt-strike-btn" title="' + (isStruck ? 'Un-strike' : 'Cross out this option') + '"></span>' : '');
+    btn.onclick = (ev) => {
+      if (ev.target.classList.contains('opt-strike-btn')) {
+        ev.preventDefault(); ev.stopPropagation();
+        if (isTopLevel) toggleStrike(i);
+        return;
+      }
       const cur = sel.slice();
       const at = cur.indexOf(i);
       if (at >= 0) cur.splice(at, 1);
@@ -866,6 +900,256 @@ function reviewGoto(filter) {
 }
 window.returnToExam = returnToExam;
 window.reviewGoto   = reviewGoto;
+
+/* =========================================================================
+   Text highlighting on the question stem (click-drag to select, then click
+   the floating "Highlight" button). Highlights are stored as character
+   ranges relative to the original question text so they survive a re-render.
+   ========================================================================= */
+
+let _hidCounter = 0;
+function applyHighlightsToText(text, marks) {
+  if (!marks || !marks.length) return escapeHtml(text);
+  // sort by start position, drop overlaps (last wins by simple merge)
+  const sorted = marks.slice().sort((a,b)=>a.start - b.start);
+  // merge overlapping ranges
+  const merged = [];
+  sorted.forEach(r => {
+    if (merged.length && r.start <= merged[merged.length-1].end) {
+      merged[merged.length-1].end = Math.max(merged[merged.length-1].end, r.end);
+    } else merged.push({...r});
+  });
+  let out = '', cursor = 0;
+  merged.forEach((r, i) => {
+    out += escapeHtml(text.slice(cursor, r.start));
+    out += '<mark class="user-hl" data-hid="' + (r.id ?? i) + '">' + escapeHtml(text.slice(r.start, r.end)) + '</mark>';
+    cursor = r.end;
+  });
+  out += escapeHtml(text.slice(cursor));
+  return out;
+}
+
+function removeHighlightById(hid) {
+  const idx = ExamState.currentIdx;
+  ExamState.highlights[idx] = (ExamState.highlights[idx] || []).filter(h => h.id !== hid);
+  renderQuestion();
+  saveInProgress();
+}
+
+let _selectionRange = null;
+document.addEventListener('selectionchange', () => {
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed) { hideHighlightPopover(); return; }
+  const range = sel.getRangeAt(0);
+  const stemEl = document.getElementById('q-text');
+  if (!stemEl || !stemEl.contains(range.startContainer) || !stemEl.contains(range.endContainer)) {
+    hideHighlightPopover();
+    return;
+  }
+  // Compute char offsets within the original (un-marked) question text by
+  // walking text nodes inside the stem.
+  const fullText = ExamState.questions[ExamState.currentIdx]?.q || '';
+  const offsets = textRangeToOffsets(stemEl, range, fullText);
+  if (!offsets) { hideHighlightPopover(); return; }
+  _selectionRange = offsets;
+  showHighlightPopover(range);
+});
+
+function textRangeToOffsets(rootEl, range, fullText) {
+  // Walk text nodes in rootEl, tracking how much un-highlighted text we have
+  // consumed. Mark elements just contain their own text which IS part of
+  // the original question, so we treat all text nodes uniformly.
+  function getCharIndex(targetNode, offset) {
+    let chars = 0;
+    function walk(node) {
+      if (node === targetNode) {
+        if (node.nodeType === Node.TEXT_NODE) chars += offset;
+        return true;   // found
+      }
+      if (node.nodeType === Node.TEXT_NODE) {
+        chars += node.textContent.length;
+        return false;
+      }
+      for (const c of node.childNodes) if (walk(c)) return true;
+      return false;
+    }
+    return walk(rootEl) ? chars : null;
+  }
+  const startOff = getCharIndex(range.startContainer, range.startOffset);
+  const endOff   = getCharIndex(range.endContainer, range.endOffset);
+  if (startOff === null || endOff === null) return null;
+  const s = Math.min(startOff, endOff), e = Math.max(startOff, endOff);
+  if (e - s < 1 || e > fullText.length) return null;
+  return { start: s, end: e };
+}
+
+function showHighlightPopover(range) {
+  const pop = document.getElementById('highlight-popover');
+  if (!pop) return;
+  const rect = range.getBoundingClientRect();
+  pop.style.display = 'block';
+  pop.style.position = 'fixed';
+  pop.style.top = Math.max(8, rect.top - 36) + 'px';
+  pop.style.left = (rect.left + rect.width / 2 - 50) + 'px';
+}
+function hideHighlightPopover() {
+  const pop = document.getElementById('highlight-popover');
+  if (pop) pop.style.display = 'none';
+  _selectionRange = null;
+}
+function applyHighlight() {
+  if (!_selectionRange) { hideHighlightPopover(); return; }
+  const idx = ExamState.currentIdx;
+  if (!ExamState.highlights[idx]) ExamState.highlights[idx] = [];
+  ExamState.highlights[idx].push({ id: ++_hidCounter, start: _selectionRange.start, end: _selectionRange.end });
+  hideHighlightPopover();
+  window.getSelection()?.removeAllRanges();
+  renderQuestion();
+  saveInProgress();
+}
+window.applyHighlight = applyHighlight;
+
+/* =========================================================================
+   Scratchpad — exam-wide notes pad
+   ========================================================================= */
+
+let _scratchpadOpen = false;
+let _scratchpadSaveTimer = null;
+
+function toggleScratchpad() {
+  const panel = document.getElementById('scratchpad-panel');
+  if (!panel) return;
+  _scratchpadOpen = !_scratchpadOpen;
+  panel.style.display = _scratchpadOpen ? 'flex' : 'none';
+  if (_scratchpadOpen) {
+    const ta = document.getElementById('scratchpad-text');
+    ta.value = ExamState.scratchpad || '';
+    ta.focus();
+    if (!ta._wired) {
+      ta._wired = true;
+      ta.addEventListener('input', () => {
+        ExamState.scratchpad = ta.value;
+        const status = document.getElementById('scratchpad-status');
+        if (status) status.textContent = 'Saving…';
+        clearTimeout(_scratchpadSaveTimer);
+        _scratchpadSaveTimer = setTimeout(() => {
+          saveInProgress();
+          if (status) status.textContent = 'Saved · ' + ta.value.length + ' chars';
+        }, 250);
+      });
+    }
+    const status = document.getElementById('scratchpad-status');
+    if (status) status.textContent = (ta.value.length ? ('Saved · ' + ta.value.length + ' chars') : 'Start typing — notes save automatically.');
+  }
+}
+window.toggleScratchpad = toggleScratchpad;
+
+function clearScratchpad() {
+  if (!confirm('Erase all scratchpad notes?')) return;
+  ExamState.scratchpad = '';
+  const ta = document.getElementById('scratchpad-text');
+  if (ta) ta.value = '';
+  saveInProgress();
+}
+window.clearScratchpad = clearScratchpad;
+
+/* =========================================================================
+   Reading-time warning — fires if the student picks an answer in under 8s
+   on a question they haven't flagged. Helps catch careless mis-reads.
+   ========================================================================= */
+
+const READING_MIN_MS = 8000;
+const _readingWarned = new Set();   // questions we've already warned on, per session
+
+function maybeReadingTimeWarn(picked, setter) {
+  const idx = ExamState.currentIdx;
+  if (_readingWarned.has(idx)) return;
+  if (ExamState.flagged[idx]) return;
+  const elapsed = Date.now() - ExamState.qEnteredAt;
+  if (elapsed >= READING_MIN_MS) return;
+  _readingWarned.add(idx);
+  showReadingWarn(picked, setter);
+}
+
+function showReadingWarn(picked, setter) {
+  const modal = document.getElementById('reading-warn-modal');
+  if (!modal) return;
+  modal.classList.add('show');
+  const close = () => modal.classList.remove('show');
+  const wire = (id, action) => {
+    const old = document.getElementById(id);
+    const fresh = old.cloneNode(true);
+    old.parentNode.replaceChild(fresh, old);
+    fresh.addEventListener('click', () => { close(); action(); });
+  };
+  wire('reading-warn-confirm', () => { /* keep answer */ });
+  wire('reading-warn-flag', () => {
+    ExamState.flagged[ExamState.currentIdx] = true;
+    renderQuestion(); renderNavigator(); saveInProgress();
+  });
+  wire('reading-warn-reread', () => {
+    // Roll back: clear the just-picked answer so the student has to re-confirm.
+    ExamState.answers[ExamState.currentIdx] = null;
+    renderQuestion(); renderNavigator(); saveInProgress();
+  });
+}
+
+/* =========================================================================
+   Keyboard shortcuts during the exam
+   ========================================================================= */
+
+document.addEventListener('keydown', (e) => {
+  // Don't trigger while typing into the scratchpad or any other input
+  const target = e.target;
+  if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
+  if (!ExamState.startedAt || ExamState.submitted) return;
+
+  // Esc closes any open modal/panel
+  if (e.key === 'Escape') {
+    if (_scratchpadOpen) { toggleScratchpad(); return; }
+    const sm = document.getElementById('submit-modal'); if (sm && sm.classList.contains('show')) { sm.classList.remove('show'); return; }
+    const rw = document.getElementById('reading-warn-modal'); if (rw && rw.classList.contains('show')) { rw.classList.remove('show'); return; }
+    return;
+  }
+
+  // Numeric keys 1-5 select option A-E for the current question (top-level only;
+  // doesn't work inside PBQ steps since they have their own setters).
+  const q = ExamState.questions[ExamState.currentIdx];
+  if (q && /^[1-5]$/.test(e.key)) {
+    const i = parseInt(e.key, 10) - 1;
+    if (q.opts && i < q.opts.length) {
+      if (q.type === 'multi') {
+        const cur = Array.isArray(ExamState.answers[ExamState.currentIdx]) ? ExamState.answers[ExamState.currentIdx].slice() : [];
+        const need = q.selectCount || (Array.isArray(q.answer) ? q.answer.length : 2);
+        const at = cur.indexOf(i);
+        if (at >= 0) cur.splice(at, 1);
+        else if (cur.length < need) cur.push(i);
+        defaultSetAnswer(cur.sort((x,y)=>x-y));
+      } else if (!q.type || q.type === 'single') {
+        defaultSetAnswer(i);
+        maybeReadingTimeWarn(i, defaultSetAnswer);
+      }
+      e.preventDefault();
+      return;
+    }
+  }
+
+  const key = e.key.toLowerCase();
+  if (key === 'f') { toggleFlag(); e.preventDefault(); }
+  else if (key === 's') {
+    // Cycle: open strike on the currently selected option (if any), else option 1
+    const cur = ExamState.answers[ExamState.currentIdx];
+    const i = (typeof cur === 'number') ? cur : 0;
+    toggleStrike(i);
+    e.preventDefault();
+  }
+  else if (key === 'n') { nextQuestion(); e.preventDefault(); }
+  else if (key === 'p') { prevQuestion(); e.preventDefault(); }
+  else if (key === 'r') {
+    if (!ExamState.reviewing) enterReviewScreen();
+    e.preventDefault();
+  }
+});
 
 /* --- Submission ---
    Two-step modal flow. Step 1 shows the current attempt summary (answered /

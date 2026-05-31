@@ -1040,3 +1040,161 @@ body.theme-test-center .review-screen .stat-tile {
   border-color: #cbd0db;
 }
 body.theme-test-center .strikethrough-hint { color: #5b6474; }
+
+/* =========================================================================
+   Text highlighting (click-drag to select, then click "Highlight")
+   ========================================================================= */
+.question-text mark.user-hl {
+  background: #fff89a;
+  color: #1a1d2e;
+  padding: 0 2px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.question-text mark.user-hl:hover {
+  outline: 2px dashed #f1c40f;
+  outline-offset: 1px;
+}
+body.theme-test-center .question-text mark.user-hl { background: #fff3a0; color: #1a1d2e; }
+.highlight-popover {
+  position: absolute;
+  z-index: 150;
+  background: var(--surface);
+  border: 1px solid var(--accent-yellow);
+  border-radius: 6px;
+  padding: 4px;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.35);
+}
+.highlight-popover button {
+  background: var(--accent-yellow);
+  color: #1a1d2e;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+body.theme-test-center .highlight-popover { background: #ffffff; border-color: #f1c40f; }
+
+/* =========================================================================
+   Scratchpad panel
+   ========================================================================= */
+.scratchpad-panel {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 360px;
+  max-width: calc(100vw - 40px);
+  height: 340px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 14px 36px rgba(0,0,0,0.5);
+  z-index: 90;
+  display: flex !important;
+  flex-direction: column;
+  overflow: hidden;
+}
+.scratchpad-panel[style*="display:none"],
+.scratchpad-panel[style*="display: none"] { display: none !important; }
+.scratchpad-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+.scratchpad-close {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+.scratchpad-close:hover { color: var(--text); }
+#scratchpad-text {
+  flex: 1;
+  resize: none;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  padding: 12px 14px;
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+.scratchpad-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+}
+.scratchpad-footer small { color: var(--text-muted); font-size: 0.78rem; }
+.scratchpad-footer button {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+.scratchpad-footer button:hover { color: var(--warning); border-color: var(--warning); }
+body.theme-test-center .scratchpad-panel { background: #ffffff; border-color: #cbd0db; }
+body.theme-test-center .scratchpad-header,
+body.theme-test-center .scratchpad-footer { background: #f9fafc; border-color: #cbd0db; }
+
+/* =========================================================================
+   Visible strikethrough button per option (eye-icon style ×)
+   ========================================================================= */
+.option-btn {
+  position: relative;
+  padding-right: 44px;   /* leave room for the × button */
+}
+.opt-strike-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  opacity: 0.55;
+  transition: opacity .15s, color .15s, border-color .15s;
+}
+.opt-strike-btn:hover { opacity: 1; color: var(--warning); border-color: var(--warning); }
+.option-btn.struck .opt-strike-btn { opacity: 1; color: var(--warning); border-color: var(--warning); }
+.option-btn.struck .opt-strike-btn::before { content: '✓'; }
+.option-btn:not(.struck) .opt-strike-btn::before { content: '✕'; }
+body.theme-test-center .opt-strike-btn { border-color: #cbd0db; color: #5b6474; }
+
+/* =========================================================================
+   <kbd> styling inside the tutorial
+   ========================================================================= */
+.tut-item kbd {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-family: 'Consolas', monospace;
+  font-size: 0.78rem;
+  margin: 0 1px;
+}
