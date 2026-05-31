@@ -35,6 +35,7 @@ JOBS = [
     ('aplus.html',        'aplus_core1.js',  'aplus1',   'core1'),
     ('aplus.html',        'aplus_core2.js',  'aplus2',   'core2'),
     ('network_plus.html', 'netplus.js',      'netplus',  None),
+    ('security_plus.html','secplus.js',      'secplus',  None),
 ]
 
 # --- A+ Core 1 vs Core 2 classifier ----------------------------------------
@@ -281,6 +282,19 @@ DOMAIN_RULES = {
         ('D3', r'\b(SNMP|syslog|NetFlow|monitor|backup|patch|change management|documentation|topology diagram|baseline|capacity|asset|SLA|MTBF|MTTR|RPO|RTO|policy|procedure)\b'),
         ('D2', r'\b(router|switch|access point|wireless controller|firewall|load balancer|proxy|cable|fiber|coaxial|twisted pair|RJ-?45|patch panel|punch down|crimper|rack|UPS|PoE|VLAN trunk|spanning tree|STP|DHCP|DNS server|reservation|scope)\b'),
         ('D1', r'\b(OSI|TCP/IP|layer [1-7]|IPv4|IPv6|subnet|CIDR|/\d{1,2}\b|address|MAC|frame|packet|segment|port \d|TCP|UDP|HTTP|HTTPS|DNS|DHCP|FTP|SSH|SMTP|POP3|IMAP|topology|hub|bus|star|mesh|protocol)\b'),
+    ],
+    'secplus': [
+        # SY0-701 blueprint:
+        #   D1 (12%) General Security Concepts — CIA, AAA, control types, change mgmt fundamentals
+        #   D2 (22%) Threats, Vulnerabilities, Mitigations — attacks, indicators, mitigation techniques
+        #   D3 (18%) Security Architecture — arch models, infrastructure, data protection, resilience
+        #   D4 (28%) Security Operations — tooling, IR, vuln mgmt, monitoring, hardening, incident response
+        #   D5 (20%) Security Program Management — governance, risk, compliance, audit, third-party, SDLC
+        ('D5', r'\b(governance|risk management|compliance|audit|policy framework|SLA|contract|MOU|MSA|NDA|due diligence|third[ -]party|supply chain|vendor risk|SDLC|secure development|SOC ?[12]|ISO ?27001|HIPAA|PCI[- ]?DSS|GDPR|SOX|CCPA|risk register|risk assessment|business impact analysis|RPO|RTO|MTTR|MTBF|disaster recovery plan|business continuity|tabletop)\b'),
+        ('D4', r'\b(incident response|forensics|SOAR|SIEM|syslog|EDR|XDR|MDR|antivirus|anti[- ]malware|patch management|vulnerability scan|penetration test|red team|blue team|purple team|hardening|baseline|configuration management|change management|playbook|runbook|threat hunt|threat intelligence|IoC|indicator of compromise|alert|monitoring|log review|tabletop exercise|containment|eradication|recovery|lessons learned|chain of custody|legal hold|backup|restore|honeypot|deception)\b'),
+        ('D3', r'\b(architecture|zero trust|microsegment|segment|DMZ|screened subnet|defense in depth|cloud (?:security|architecture)|hybrid cloud|SASE|CASB|SD-?WAN|encryption at rest|encryption in transit|TLS|VPN|IPSec|data classification|data sovereignty|tokenization|hashing|salting|HSM|TPM|secure boot|UEFI|key management|PKI|certificate|CA|OCSP|CRL|VLAN|VPC|load balancer|reverse proxy|WAF|web application firewall|backup architecture|high availability|HA cluster|RAID|geographic redundancy)\b'),
+        ('D2', r'\b(phishing|vishing|smishing|spear phishing|whaling|pretexting|impersonation|brand impersonation|business email compromise|BEC|malware|virus|worm|trojan|ransomware|spyware|adware|rootkit|keylogger|bot|botnet|cryptominer|cryptojack|DDoS|DoS|SQL injection|XSS|cross-site|CSRF|XXE|directory traversal|buffer overflow|race condition|deserializ|side channel|on-?path|man-in-the-middle|MITM|ARP poison|DNS poison|rogue access point|evil twin|deauthentic|zero day|0-?day|fileless|living off the land|LOTL|brute force|password spray|credential stuffing|pass[- ]the[- ]hash|pass[- ]the[- ]ticket|kerberoast|insider threat|social engineering|shoulder surf|dumpster|tailgat)\b'),
+        ('D1', r'\b(CIA triad|confidentiality|integrity|availability|non[- ]repudiation|AAA|authentication|authorization|accounting|access control|principle of least privilege|separation of duties|mandatory access control|MAC|discretionary access control|DAC|role[- ]based access control|RBAC|rule[- ]based|attribute[- ]based access control|ABAC|directive control|deterrent control|preventive control|detective control|corrective control|compensating control|gap analysis|defense in depth|control type)\b'),
     ],
 }
 

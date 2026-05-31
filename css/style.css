@@ -162,6 +162,7 @@ input[type="text"]:focus, select:focus {
 .exam-card.aplus1::before    { background: linear-gradient(90deg, var(--accent-red), var(--accent-orange)); }
 .exam-card.aplus2::before    { background: linear-gradient(90deg, var(--accent-orange), #f39c12); }
 .exam-card.netplus::before   { background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple)); }
+.exam-card.secplus::before   { background: linear-gradient(90deg, var(--accent-green), var(--accent-blue)); }
 .exam-card .exam-code {
   font-size: 0.7rem;
   font-weight: 700;
@@ -175,6 +176,7 @@ input[type="text"]:focus, select:focus {
 .exam-card.aplus1 h3,
 .exam-card.aplus2 h3 { color: var(--accent-orange); }
 .exam-card.netplus h3 { color: var(--accent-blue); }
+.exam-card.secplus h3 { color: var(--accent-green); }
 .exam-card .exam-meta {
   font-size: 0.85rem;
   color: var(--text-muted);
@@ -197,6 +199,7 @@ input[type="text"]:focus, select:focus {
 .exam-card.aplus1   .start-btn { background: linear-gradient(135deg, var(--accent-red), var(--accent-orange)); }
 .exam-card.aplus2   .start-btn { background: linear-gradient(135deg, var(--accent-orange), #f39c12); }
 .exam-card.netplus  .start-btn { background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); }
+.exam-card.secplus  .start-btn { background: linear-gradient(135deg, var(--accent-green), var(--accent-blue)); }
 
 /* === Recent attempts === */
 .attempts-list { display: flex; flex-direction: column; gap: 8px; }

@@ -99,6 +99,23 @@ window.EXAMS = {
       { id: 'D4', name: 'Network Security',              weight: 14 },
       { id: 'D5', name: 'Network Troubleshooting',       weight: 24 }
     ]
+  },
+  secplus: {
+    id: 'secplus',
+    code: 'SY0-701',
+    name: 'Security+',
+    fullName: 'CompTIA Security+ (SY0-701)',
+    questionCount: 90,
+    timeMinutes: 90,
+    passScaled: 750,
+    styleClass: 'secplus',
+    domains: [
+      { id: 'D1', name: 'General Security Concepts',                     weight: 12 },
+      { id: 'D2', name: 'Threats, Vulnerabilities, and Mitigations',     weight: 22 },
+      { id: 'D3', name: 'Security Architecture',                         weight: 18 },
+      { id: 'D4', name: 'Security Operations',                           weight: 28 },
+      { id: 'D5', name: 'Security Program Management and Oversight',     weight: 20 }
+    ]
   }
 };
 

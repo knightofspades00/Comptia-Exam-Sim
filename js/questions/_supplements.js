@@ -1166,6 +1166,208 @@
       answer: 1, exp: 'Per-application differentiation usually means port-level filtering. Identify the desktop client\'s required ports (often documented by the vendor) and verify firewall rules allow them outbound.' }
   ]);
 
+  /* ----------------- Security+ — multi-response, drag-drop, PBQs ----------- */
+  add('secplus', [
+    /* Multi-response */
+    { type: 'multi', selectCount: 3, domain: 'D1',
+      q: 'Select THREE components of the CIA triad.',
+      opts: ['Confidentiality', 'Integrity', 'Authentication', 'Availability', 'Authorization'],
+      answer: [0, 1, 3],
+      exp: 'CIA = Confidentiality (limit disclosure), Integrity (prevent unauthorized modification), Availability (ensure access). Authentication and Authorization are part of AAA, not CIA.' },
+    { type: 'multi', selectCount: 2, domain: 'D2',
+      q: 'A user receives a phone call from someone impersonating their CEO, who pressures them to wire money urgently. Select TWO social-engineering techniques being used.',
+      opts: ['Vishing (voice phishing)', 'SQL injection', 'Pretexting / Impersonation', 'Cryptojacking', 'Buffer overflow'],
+      answer: [0, 2],
+      exp: 'Vishing = phone-based phishing; Pretexting/Impersonation = using a fabricated authority role (CEO) to extract action. The combination is classic Business Email Compromise (BEC) over voice.' },
+    { type: 'multi', selectCount: 3, domain: 'D4',
+      q: 'According to the standard incident-response lifecycle, select THREE phases.',
+      opts: ['Preparation', 'Detection and Analysis', 'Marketing', 'Containment, Eradication, and Recovery', 'Post-Incident Activity'],
+      answer: [0, 1, 4],
+      exp: 'CompTIA / NIST IR lifecycle: Preparation → Detection & Analysis → Containment, Eradication, Recovery → Post-Incident Activity (lessons learned). All four are part of the standard model.' },
+    { type: 'multi', selectCount: 2, domain: 'D5',
+      q: 'A company is preparing for a SOC 2 Type II audit. Select TWO documents the auditor is MOST likely to request.',
+      opts: ['Personal calendars of executives', 'Information security policies and procedures', 'List of employees\' favorite restaurants', 'Evidence of operating effectiveness of controls over the audit period', 'A copy of the company logo'],
+      answer: [1, 3],
+      exp: 'SOC 2 Type II reviews both control design (policies/procedures) AND operating effectiveness over a period (typically 6–12 months). Evidence: tickets, change records, access reviews, etc.' },
+    { type: 'multi', selectCount: 2, domain: 'D3',
+      q: 'A company wants to encrypt sensitive data at rest on Windows endpoints. Select TWO technologies that BEST support this.',
+      opts: ['BitLocker full-disk encryption', 'HTTPS', 'EFS (Encrypting File System) for per-file encryption', 'WPA3', 'DNS over HTTPS'],
+      answer: [0, 2],
+      exp: 'BitLocker encrypts the volume; EFS encrypts individual files for specific users. HTTPS and WPA3 protect data in transit. DoH is DNS privacy, not file encryption.' },
+
+    /* Drag-and-drop matching — attack to category */
+    { type: 'dnd-match', domain: 'D2',
+      q: 'Match each attack to the BEST-fitting category.',
+      items: [
+        { id: 'ddos',  label: 'Volumetric DDoS' },
+        { id: 'phish', label: 'Spear-phishing email targeting CFO' },
+        { id: 'sqli',  label: 'SQL injection into a public form' },
+        { id: 'reuse', label: 'Credential stuffing using leaked passwords' }
+      ],
+      buckets: [
+        { id: 'b_avail',  label: 'Availability attack' },
+        { id: 'b_social', label: 'Social engineering' },
+        { id: 'b_web',    label: 'Web application attack' },
+        { id: 'b_auth',   label: 'Authentication / credential attack' }
+      ],
+      correct: { ddos: 'b_avail', phish: 'b_social', sqli: 'b_web', reuse: 'b_auth' },
+      exp: 'DDoS overwhelms availability. Spear-phishing manipulates a person. SQLi exploits a web app input. Credential stuffing replays leaked passwords against authentication endpoints.' },
+    { type: 'dnd-match', domain: 'D1',
+      q: 'Match each security control to its category.',
+      items: [
+        { id: 'cam',   label: 'Surveillance camera in lobby' },
+        { id: 'lock',  label: 'Door lock' },
+        { id: 'mfa',   label: 'Multi-factor authentication on VPN' },
+        { id: 'sign',  label: '"Authorized Personnel Only" sign' },
+        { id: 'restore', label: 'Restoring from backup after ransomware' }
+      ],
+      buckets: [
+        { id: 'b_det',  label: 'Detective' },
+        { id: 'b_prev', label: 'Preventive' },
+        { id: 'b_det2', label: 'Preventive (technical)' },
+        { id: 'b_ddt',  label: 'Deterrent' },
+        { id: 'b_corr', label: 'Corrective' }
+      ],
+      correct: { cam: 'b_det', lock: 'b_prev', mfa: 'b_det2', sign: 'b_ddt', restore: 'b_corr' },
+      exp: 'Cameras DETECT what happened. Locks PREVENT entry. MFA PREVENTS unauthorized access (technical). Signs DETER would-be attackers. Restoring CORRECTS / restores after an incident.' },
+
+    /* Single-answer scenario MC — D1 */
+    { domain: 'D1', q: 'A company implements a guard at the door, a locked badge reader, and a camera that records the lobby. Which security principle do these layers BEST illustrate?',
+      opts: ['Least privilege', 'Defense in depth', 'Separation of duties', 'Mandatory access control'],
+      answer: 1, exp: 'Multiple overlapping controls (physical + technical + monitoring) are the textbook definition of defense in depth. Least privilege limits access scope; separation of duties splits sensitive tasks; MAC is an access-control model.' },
+    { domain: 'D1', q: 'A small company wants to ensure no single employee can both create AND approve vendor payments. Which security principle BEST supports this design?',
+      opts: ['Defense in depth', 'Separation of duties', 'Least privilege', 'Need to know'],
+      answer: 1, exp: 'Separation of duties splits high-risk actions across multiple people, reducing fraud and error. Least privilege restricts access scope; defense in depth layers controls; need-to-know limits disclosure.' },
+    { domain: 'D1', q: 'A workstation is configured so that even a help-desk technician with admin rights cannot access encrypted HR files without explicit grant. This BEST illustrates which control concept?',
+      opts: ['Discretionary access control', 'Least privilege via separation of HR data', 'Disabling encryption', 'Default deny'],
+      answer: 1, exp: 'Least privilege means a user gets only the access required for their role. Even an admin should not by default access all data; HR/finance data is typically gated by separate ACLs or encryption-key control.' },
+
+    /* D2 — Threats, Vulnerabilities, Mitigations */
+    { domain: 'D2', q: 'A user receives an email that appears to come from the company\'s CEO asking the user to wire $50,000 immediately to a new vendor. The email address looks slightly off ("ceo@company-co.com" instead of "ceo@company.com"). Which BEST describes this attack?',
+      opts: ['Whaling (executive impersonation via spoofed look-alike domain) — a form of BEC', 'Spear-phishing of the CEO themselves', 'DDoS', 'Insider threat from the CEO'],
+      answer: 0, exp: 'Whaling targets or impersonates high-value individuals (CFO, CEO). Look-alike domains are the classic delivery. Combined with urgency + financial action = Business Email Compromise (BEC). Spear-phishing the CEO would target the CEO\'s inbox.' },
+    { domain: 'D2', q: 'A web application accepts user input and includes it directly in a SQL query without sanitization. An attacker enters: " OR \'1\'=\'1 ". The login succeeds without a valid password. Which BEST describes the vulnerability?',
+      opts: ['Cross-site scripting (XSS)', 'SQL injection — input was concatenated into the query', 'Buffer overflow', 'Directory traversal'],
+      answer: 1, exp: 'Tautology-style SQL injection. The fix: parameterized queries / prepared statements, plus input validation. XSS injects script; buffer overflow targets memory bounds; directory traversal accesses arbitrary paths.' },
+    { domain: 'D2', q: 'A user reports their workstation runs hot for hours overnight despite no programs being open. CPU is at 100%, fans run loud, and processes show "wmiprvse.exe" with high CPU. Antivirus is up to date. Which threat is MOST consistent?',
+      opts: ['Failed CPU', 'Cryptojacking (cryptominer malware running in the background)', 'Phishing', 'Normal Windows Update'],
+      answer: 1, exp: 'Sustained high CPU at idle is the signature of cryptojacking malware mining cryptocurrency. Disconnect, scan with anti-malware (signature-based AV often misses miners), and investigate persistence mechanisms.' },
+    { domain: 'D2', q: 'A user clicks a link in an email and is directed to a website that looks identical to their bank\'s login page. The URL bar shows "bank-secure-login.com". The user notices and stops. Which BEST describes the attack that was attempted?',
+      opts: ['Cryptojacking', 'Phishing using a look-alike URL', 'Brute force', 'Insider threat'],
+      answer: 1, exp: 'Phishing via look-alike domain ("bank-secure-login.com" is not the bank\'s real domain). Train users to verify the actual domain (the part before the first single slash) and to navigate to important sites via bookmarks instead of email links.' },
+    { domain: 'D2', q: 'A vulnerability scan reports a critical finding for a server. Before patching, the security team wants to confirm the vulnerability is exploitable in the company\'s environment. Which action BEST supports this confirmation?',
+      opts: ['Skip confirmation and patch immediately', 'Conduct a controlled penetration test or proof-of-concept exploitation in a sandboxed environment to verify exploitability', 'Disable the server permanently', 'Wait for an external audit'],
+      answer: 1, exp: 'Confirming exploitability in your specific environment via a controlled test or PoC validates the scanner finding and helps prioritize. Patching without confirmation is still good practice when the CVE is critical and external exposure is high.' },
+    { domain: 'D2', q: 'An attacker exploits a previously unknown flaw in a widely-deployed Windows component. Within hours, multiple organizations are compromised. No patch is yet available. Which BEST describes this attack?',
+      opts: ['Insider threat', 'Zero-day exploit', 'Phishing', 'Brute force'],
+      answer: 1, exp: 'A zero-day exploits a vulnerability with no available patch. Defenses: defense in depth (EDR, network monitoring, application allow-listing), rapid patch deployment when available, and threat intelligence to detect IoCs early.' },
+
+    /* D3 — Security Architecture */
+    { domain: 'D3', q: 'A company hosts customer data in a public cloud SaaS platform. Which BEST describes the cloud security shared-responsibility model?',
+      opts: ['The cloud provider is responsible for everything', 'The customer is responsible for everything', 'The provider handles infrastructure and platform security; the customer handles data classification, user/identity management, and access policies', 'Responsibility is randomly assigned'],
+      answer: 2, exp: 'Shared responsibility: the deeper into the stack you go (IaaS → PaaS → SaaS), the more the provider handles. In SaaS, the provider manages the app and infra; customer still owns data, identity, and access decisions.' },
+    { domain: 'D3', q: 'A company implements a "zero trust" architecture for remote access. Which BEST describes the foundational principle?',
+      opts: ['Trust all internal traffic; verify all external', 'Never trust, always verify — every request must be authenticated and authorized regardless of source', 'Trust based on network location only', 'Trust all users with VPN access'],
+      answer: 1, exp: 'Zero trust assumes no implicit trust based on network location. Every request is authenticated, authorized, and (often) inspected. Implementations use identity, device posture, and context — not just a VPN tunnel.' },
+    { domain: 'D3', q: 'A small business needs to encrypt traffic between branch offices over the public internet. Which technology is MOST appropriate?',
+      opts: ['HTTPS only', 'Site-to-site IPsec VPN', 'Disable encryption to improve speed', 'WPA3'],
+      answer: 1, exp: 'Site-to-site IPsec VPN tunnels all traffic between two networks over the internet. HTTPS encrypts individual web sessions. WPA3 is wireless encryption. The point of site-to-site is to make remote sites trustable as if they were one LAN.' },
+    { domain: 'D3', q: 'A development team stores its application secrets (database passwords, API keys) directly in source code. The security team requires this to change. Which is the MOST appropriate solution?',
+      opts: ['Encrypt the source code', 'Move secrets into a dedicated secrets manager (HashiCorp Vault, Azure Key Vault, AWS Secrets Manager) and inject them at runtime', 'Remove all authentication', 'Use weaker passwords so they\'re easier to memorize'],
+      answer: 1, exp: 'Secrets managers centralize sensitive material, support rotation, log access, and inject secrets at runtime. Storing in code (even encrypted) exposes them to anyone with repo access and complicates rotation.' },
+    { domain: 'D3', q: 'A company\'s primary data center is in a hurricane-prone region. Which architecture decision BEST supports operational resilience?',
+      opts: ['Single data center with very strong walls', 'Geographic redundancy: a secondary data center in a different region for failover', 'Cheaper hardware to reduce loss', 'Move servers to a basement'],
+      answer: 1, exp: 'Geographic redundancy across regions is the proven response to regional disasters (hurricanes, earthquakes, prolonged power outages). Combine with tested DR runbooks and clearly defined RTO/RPO.' },
+
+    /* D4 — Security Operations (largest weight, needs more content) */
+    { domain: 'D4', q: 'A SOC analyst sees repeated alerts that an internal workstation is contacting a known command-and-control domain on a 6-hour interval. What MOST likely describes this behavior?',
+      opts: ['Normal Windows Update', 'Beaconing — a compromised host calling back to attacker infrastructure', 'NTP synchronization', 'Backup software'],
+      answer: 1, exp: 'Periodic outbound to a known-malicious domain = beaconing. Indicates compromise. Isolate the host, capture forensic data, identify the malware, and check other hosts for similar IoCs.' },
+    { domain: 'D4', q: 'A company is hit by ransomware that encrypts files on file shares. The incident response team has activated the IR plan. Which is the MOST appropriate FIRST step?',
+      opts: ['Pay the ransom', 'Containment — isolate affected systems from the network to prevent further spread', 'Disclose the breach to the press', 'Reformat all systems immediately'],
+      answer: 1, exp: 'IR phase order: Preparation → Detection → CONTAINMENT (stop spread) → Eradication → Recovery → Lessons Learned. Reformat is part of eradication/recovery and skips the forensic preservation that may follow containment.' },
+    { domain: 'D4', q: 'A user reports their laptop is acting strangely and the security team suspects malware. Before they image the disk for forensics, what should they do FIRST to preserve evidence integrity?',
+      opts: ['Reboot the laptop', 'Establish a chain of custody and capture volatile memory (RAM dump) plus disk image; document all actions', 'Run a virus scan and call it good', 'Reset the user\'s password and move on'],
+      answer: 1, exp: 'Volatile memory (RAM) is lost on reboot. Capture it FIRST, then a forensically-sound disk image. Maintain chain of custody and document every step — critical if findings might support legal action.' },
+    { domain: 'D4', q: 'A company\'s SIEM correlates a failed login attempt from one country followed 10 minutes later by a successful login from a different continent for the same account. Which BEST describes this detection?',
+      opts: ['Normal travel', 'Impossible-travel anomaly indicating a likely credential compromise', 'A backup job', 'A NTP drift'],
+      answer: 1, exp: 'Impossible-travel detection: physically impossible distance in a short time window. Indicates the account credentials are likely compromised (or VPN/proxy use). Force re-authentication, reset password, enable MFA, investigate.' },
+    { domain: 'D4', q: 'A security team wants to reduce the attack surface of internet-facing servers. Which BEST illustrates "system hardening"?',
+      opts: ['Adding more services to the server', 'Disabling unused services, applying patches, removing default credentials, and configuring host-based firewalls', 'Disabling the firewall to improve performance', 'Sharing admin credentials with all employees'],
+      answer: 1, exp: 'Hardening = reducing the attack surface: minimum services, patches current, no default creds, host firewall, restricted account privilege. CIS Benchmarks and DISA STIGs provide concrete checklists.' },
+    { domain: 'D4', q: 'After a security incident, the team produces a written report and convenes a "lessons learned" meeting. What is the PRIMARY goal of this phase?',
+      opts: ['Assign blame to specific employees', 'Identify what worked, what didn\'t, and update the IR plan / playbooks to improve next time', 'Decide whether to pay future ransoms', 'Choose new firewall products'],
+      answer: 1, exp: 'Post-incident review focuses on systemic improvement, not blame. Update playbooks, fix gaps in detection and response, share takeaways. Done well, this is where the IR program matures fastest.' },
+    { domain: 'D4', q: 'An EDR alert fires for "suspicious PowerShell encoded command execution" on a workstation. Which is the MOST appropriate FIRST action?',
+      opts: ['Ignore — PowerShell is normal', 'Investigate: decode the command, capture the process tree, and isolate the host if malicious activity is confirmed', 'Reboot the workstation', 'Replace the workstation immediately'],
+      answer: 1, exp: 'Encoded PowerShell is a common malware/living-off-the-land technique. Decode the command, examine the parent process, look for persistence. Isolate if malicious. Replacement is excessive without investigation.' },
+
+    /* D5 — Security Program Management and Oversight */
+    { domain: 'D5', q: 'A company is calculating the financial impact of a critical server\'s downtime. The single-loss expectancy (SLE) is the loss per event; the annualized rate of occurrence (ARO) is how many times per year. What does the annualized loss expectancy (ALE) measure?',
+      opts: ['The total project cost', 'The expected annual financial loss = SLE × ARO', 'The number of employees affected', 'The number of CVEs in the asset'],
+      answer: 1, exp: 'ALE = SLE × ARO. It converts a per-event impact into a yearly expected loss, enabling comparison with the annual cost of a control to make data-driven risk decisions.' },
+    { domain: 'D5', q: 'A company is onboarding a new third-party SaaS vendor that will process customer data. Which document BEST describes the security obligations of the vendor?',
+      opts: ['The CEO\'s biography', 'A Master Service Agreement (MSA) with security addenda, and a vendor Data Processing Agreement (DPA) if PII is involved', 'A blog post', 'A LinkedIn profile'],
+      answer: 1, exp: 'Vendor contracts (MSA + addenda) plus a DPA (for personal data) document required security controls, breach notification windows, data handling, and audit rights. Critical for managing third-party / supply-chain risk.' },
+    { domain: 'D5', q: 'A regulated company must demonstrate ongoing compliance with PCI-DSS. Which activity BEST supports this?',
+      opts: ['Conduct PCI-DSS scoping, perform required annual assessment (SAQ or QSA-led), quarterly vulnerability scans, and continuous monitoring', 'A one-time compliance check five years ago', 'Self-attestation without controls', 'Disable all logging'],
+      answer: 0, exp: 'PCI-DSS requires ongoing activities: scoping CDE, annual ROC/SAQ, quarterly ASV scans, penetration tests, change management, log retention. Compliance is a continuous process, not a one-time event.' },
+    { domain: 'D5', q: 'A risk assessment identifies a critical vulnerability with a 5% annual probability of exploitation and an estimated impact of $500,000 per event. The cost of mitigation is $40,000 per year. Which response BEST applies?',
+      opts: ['Accept the risk', 'Mitigate — annual expected loss is $25,000 but a $40,000 control may still be justified if it reduces probability significantly, or pair with transfer/cyber insurance for residual risk', 'Ignore the assessment', 'Disable the affected system permanently'],
+      answer: 1, exp: 'ALE = $500,000 × 5% = $25,000. Pure ALE math says $40K is too expensive, BUT controls often reduce probability AND impact, and risk decisions also consider reputational and regulatory factors. Pair with insurance to transfer residual risk if appropriate.' },
+    { domain: 'D5', q: 'A company is acquiring another business and inherits its systems. What is the MOST appropriate FIRST step from a security perspective?',
+      opts: ['Connect the acquired company\'s network immediately to the corporate LAN', 'Conduct due-diligence security assessment of the acquired environment BEFORE network integration', 'Disable all the acquired company\'s controls', 'Skip security planning to speed integration'],
+      answer: 1, exp: 'Mergers and acquisitions are high-risk security events. Due-diligence assessment (controls maturity, known incidents, vulnerabilities) precedes integration. Connecting first risks inheriting active compromises.' },
+    { domain: 'D5', q: 'A company\'s policy requires that no single person can BOTH process payroll AND approve it. This policy supports which principle, and which type of control is the policy itself?',
+      opts: ['Defense in depth; technical control', 'Separation of duties; administrative (managerial) control', 'Least privilege; physical control', 'Need-to-know; detective control'],
+      answer: 1, exp: 'Separation of duties prevents fraud by splitting sensitive tasks. The control is administrative/managerial (policy-based), as opposed to technical or physical. Both classifications matter on exam questions about control types.' }
+  ]);
+
+  /* ----------------- Security+ — PBQ ---------------------------------------- */
+  add('secplus', [
+    { type: 'pbq', domain: 'D4',
+      q: 'PBQ — Ransomware incident: A company\'s file server has been encrypted by ransomware. The IR team activates the plan. Walk through the response.',
+      steps: [
+        { kind: 'single',
+          text: 'Step 1: Per the standard IR lifecycle, what is the team\'s MOST appropriate FIRST priority?',
+          opts: [
+            'Notify the press',
+            'Containment — isolate affected systems from the network',
+            'Reformat all systems immediately',
+            'Pay the ransom'
+          ],
+          answer: 1
+        },
+        { kind: 'multi', selectCount: 3,
+          text: 'Step 2: Select THREE actions to take DURING containment.',
+          opts: [
+            'Disconnect affected systems from the network (do NOT power off if forensics will follow)',
+            'Identify the scope: which file shares and endpoints are affected',
+            'Preserve evidence: capture volatile memory and disk images on representative hosts',
+            'Restart all affected machines to "clear" the ransomware',
+            'Post details on social media'
+          ],
+          answer: [0, 1, 2]
+        },
+        { kind: 'dnd-match',
+          text: 'Step 3: Map each subsequent IR phase to its primary action.',
+          items: [
+            { id: 'erad',    label: 'Eradication' },
+            { id: 'recov',   label: 'Recovery' },
+            { id: 'lessons', label: 'Lessons Learned' }
+          ],
+          buckets: [
+            { id: 'b_remove',   label: 'Remove malware persistence; verify no remaining IoCs' },
+            { id: 'b_restore',  label: 'Restore systems from clean backups; validate functionality' },
+            { id: 'b_review',   label: 'Convene meeting; update playbooks; share takeaways' }
+          ],
+          correct: { erad: 'b_remove', recov: 'b_restore', lessons: 'b_review' }
+        }
+      ],
+      exp: 'Standard IR phase order: Preparation → Detection & Analysis → Containment → Eradication → Recovery → Lessons Learned. Containment is the urgent action that stops spread; eradication removes the threat; recovery restores operations; lessons learned matures the program.'
+    }
+  ]);
+
   /* ----------------- Network+ — additional PBQ ----------------------------- */
   add('netplus', [
     { type: 'pbq', domain: 'D5',
