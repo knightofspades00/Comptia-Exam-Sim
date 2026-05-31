@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam in progress · CompTIA Exam Portal</title>
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="in-exam">
+
+<!-- ========================================================================
+     Pre-exam splash overlay — confidentiality acknowledgment + brief
+     tutorial. The timer DOES NOT start until "Begin Exam" is clicked.
+     Mirrors the screens the real CompTIA / Pearson VUE exam presents
+     before the clock starts.
+     ======================================================================== -->
+<div id="splash-overlay" class="splash-overlay">
+  <div class="splash-card">
+    <div class="splash-header">
+      <div class="splash-badge">Before You Begin</div>
+      <h1 id="splash-exam-name">CompTIA Exam</h1>
+      <div class="splash-meta">
+        <span id="splash-questions">— questions</span> ·
+        <span id="splash-time">— minutes</span> ·
+        <span id="splash-pass">— passing score</span>
+      </div>
+    </div>
+
+    <section class="splash-section">
+      <h2>Confidentiality &amp; Conduct</h2>
+      <ul>
+        <li>The content of this exam is for your personal preparation. <strong>Do not share, copy, photograph, or distribute any question, answer, or item.</strong></li>
+        <li>Do not use external resources, second devices, or another person's help during the exam.</li>
+        <li>Once you click <strong>Begin Exam</strong>, the timer starts and cannot be paused.</li>
+        <li>Closing this tab or window mid-exam is treated as an early submit. Your score is recorded based on what you have answered so far.</li>
+      </ul>
+    </section>
+
+    <section class="splash-section">
+      <h2>How to Navigate</h2>
+      <div class="tutorial-grid">
+        <div class="tut-item">
+          <div class="tut-emoji">📋</div>
+          <div>
+            <strong>Question Navigator</strong> on the right lets you jump to any question. Answered items are highlighted; flagged items have a yellow dot.
+          </div>
+        </div>
+        <div class="tut-item">
+          <div class="tut-emoji">⚑</div>
+          <div>
+            <strong>Flag for review</strong> marks a question to come back to. The Review screen at the end shows all flagged items.
+          </div>
+        </div>
+        <div class="tut-item">
+          <div class="tut-emoji">✕</div>
+          <div>
+            <strong>Right-click an answer</strong> to cross it out (strike-through) if you've eliminated it. Right-click again to un-strike.
+          </div>
+        </div>
+        <div class="tut-item">
+          <div class="tut-emoji">⏱️</div>
+          <div>
+            <strong>Timer</strong> at the top right counts down from your full exam time. Warnings appear at 30, 15, 5, and 1 minute remaining. Auto-submits at 0.
+          </div>
+        </div>
+        <div class="tut-item">
+          <div class="tut-emoji">🖱️</div>
+          <div>
+            <strong>Drag-and-drop &amp; Multi-Response</strong> questions look different from regular MC. Multi-response asks "Select TWO" (or more). Drag-drop has chips you move into buckets — click a placed chip to send it back to the pool.
+          </div>
+        </div>
+        <div class="tut-item">
+          <div class="tut-emoji">🎯</div>
+          <div>
+            <strong>Submit Exam</strong> requires double-confirmation. Anything left blank counts as wrong.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <label class="splash-check">
+      <input type="checkbox" id="splash-agree">
+      <span>I have read and agree to the conduct policy above. I'm ready to take this exam.</span>
+    </label>
+    <div class="splash-actions">
+      <a class="btn btn-ghost" href="index.html">← Back to start</a>
+      <button class="btn btn-primary" id="begin-exam-btn" disabled>Begin Exam →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================
+     Time-warning toast container. Toasts fade in/out at threshold marks.
+     ======================================================================== -->
+<div id="time-toast" class="time-toast" aria-live="polite"></div>
+
+<!-- ========================================================================
+     Tab-switch warning banner — shown after the user comes back from
+     hiding the tab. Persistent count visible in the exam bar.
+     ======================================================================== -->
+
+<div class="exam-bar">
+  <div class="left">
+    <div>
+      <div class="exam-name" id="exam-name">—</div>
+      <div class="student-info" id="student-info">—</div>
+    </div>
+    <div class="tab-switch-indicator" id="tab-switch-indicator" style="display:none">
+      ⚠️ Tab leaves: <span id="tab-switch-count">0</span>
+    </div>
+  </div>
+  <div class="right">
+    <div>Time remaining</div>
+    <div class="timer" id="exam-timer">--:--</div>
+    <button class="btn btn-danger" onclick="confirmSubmit()">Submit Exam</button>
+  </div>
+</div>
+
+<div id="exam-runner">
+  <div class="exam-layout">
+    <main>
+      <div class="question-card">
+        <div class="question-meta">
+          <span class="q-num" id="q-num">Question 1</span>
+          <span class="domain-tag" id="q-domain">—</span>
+          <span class="type-tag" id="q-type-tag" style="display:none">—</span>
+          <button class="flag-btn" id="flag-btn" onclick="toggleFlag()">⚑ Flag for review</button>
+        </div>
+        <div class="question-text" id="q-text">Loading…</div>
+        <div class="exhibit-container" id="exhibit-container" style="display:none"></div>
+        <div class="option-list" id="option-list"></div>
+        <div class="strikethrough-hint" id="strikethrough-hint">
+          Tip: right-click an answer to cross it out.
+        </div>
+        <div class="q-controls">
+          <button class="btn btn-ghost" id="prev-btn" onclick="prevQuestion()">← Previous</button>
+          <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()">Next →</button>
+        </div>
+      </div>
+    </main>
+
+    <aside class="exam-sidebar">
+      <h4>Question Navigator</h4>
+      <div class="nav-legend">
+        <span><span class="legend-dot answered"></span>Answered</span>
+        <span><span class="legend-dot flagged"></span>Flagged</span>
+        <span><span class="legend-dot empty"></span>Blank</span>
+      </div>
+      <div class="q-grid" id="q-grid"></div>
+      <div id="nav-summary" style="font-size:0.78rem;color:var(--text-muted);margin-top:10px">—</div>
+      <button class="btn btn-ghost sidebar-btn" onclick="confirmSubmit()" style="margin-top:14px">Submit Exam</button>
+    </aside>
+  </div>
+</div>
+
+<div id="review-screen" class="review-screen" style="display:none">
+  <h2>Review before you submit</h2>
+  <p style="color:var(--text-muted);margin-bottom:18px">Once you submit, you can't change answers. Anything left blank counts as wrong.</p>
+  <div class="review-stats">
+    <div class="stat-tile" id="rev-answered-tile">
+      <div class="stat-num" id="rev-answered">0</div>
+      <div class="stat-label">Answered</div>
+    </div>
+    <div class="stat-tile" id="rev-flag-tile">
+      <div class="stat-num" id="rev-flagged">0</div>
+      <div class="stat-label">Flagged</div>
+    </div>
+    <div class="stat-tile" id="rev-blank-tile">
+      <div class="stat-num" id="rev-blank">0</div>
+      <div class="stat-label">Unanswered</div>
+    </div>
+  </div>
+  <div class="review-actions">
+    <button class="btn btn-ghost" onclick="returnToExam()">← Back to exam</button>
+    <button class="btn btn-ghost" onclick="reviewGoto('first-blank')">Go to first unanswered</button>
+    <button class="btn btn-ghost" onclick="reviewGoto('first-flagged')">Go to first flagged</button>
+    <button class="btn btn-danger" onclick="confirmSubmit()">Submit Exam</button>
+  </div>
+</div>
+
+<!-- ========================================================================
+     Submit confirmation modal — 2-step. Real Pearson VUE never
+     submits on a single click.
+     ======================================================================== -->
+<div id="submit-modal" class="modal-mask">
+  <div class="modal">
+    <h3 id="submit-modal-title">Submit Exam?</h3>
+    <p id="submit-modal-body">—</p>
+    <div class="modal-actions" id="submit-modal-actions">
+      <button class="btn btn-ghost" id="submit-cancel">Cancel</button>
+      <button class="btn btn-danger" id="submit-continue">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+
+<!-- Question pools — these populate window.QUESTION_POOLS[<examId>] -->
+<script src="js/questions/techplus.js"></script>
+<script src="js/questions/aplus_core1.js"></script>
+<script src="js/questions/aplus_core2.js"></script>
+<script src="js/questions/netplus.js"></script>
+<!-- Hand-authored multi-response / drag-and-drop / PBQ questions; loaded
+     after the pools so they get appended without conflicting with regen. -->
+<script src="js/questions/_supplements.js"></script>
+
+<script src="js/exam.js"></script>
+
+</body>
+</html>

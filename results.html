@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Results · CompTIA Exam Portal</title>
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="badge">Exam Results</div>
+  <h1 id="exam-name">—</h1>
+  <p id="student-line">—</p>
+</header>
+
+<main>
+
+  <div class="results-hero">
+    <div class="verdict-badge" id="verdict-badge">—</div>
+    <div class="scaled-score" id="scaled-score">—</div>
+    <div class="raw-score" id="raw-score">—</div>
+    <div class="pass-threshold" id="pass-threshold">—</div>
+    <div class="raw-score" id="elapsed">—</div>
+    <div id="submit-status" class="submit-status">—</div>
+  </div>
+
+  <div class="domain-breakdown" id="domain-breakdown"></div>
+
+  <div id="wrong-list"></div>
+
+  <div style="text-align:center;margin:30px 0;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+    <a class="btn btn-ghost" href="index.html">← Back to start</a>
+    <button class="btn btn-primary" onclick="window.print()">Print / Save as PDF</button>
+  </div>
+
+</main>
+
+<footer>CompTIA Exam Portal · companion to the <a href="https://knightofspades00.github.io/Comptia-Study-Library/">CompTIA Study Library</a></footer>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/results.js"></script>
+</body>
+</html>

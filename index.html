@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CompTIA Exam Portal</title>
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f1117">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="app-header">
+  <div class="badge">Practice Exam</div>
+  <h1>CompTIA <span>Exam Portal</span></h1>
+  <p>Timed, full-length practice exams modeled on the real Tech+, A+, and Network+ formats.</p>
+</header>
+
+<main>
+
+  <section class="card" id="login-card">
+    <h2>Sign in to start</h2>
+    <p class="help">Your name and class period are used to tag your score when you submit. There is no password — your browser remembers you for next time.</p>
+    <div class="form-row">
+      <div class="field">
+        <label for="student-name">Full name</label>
+        <input type="text" id="student-name" placeholder="e.g., Alex Rivera" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="class-period">Class period</label>
+        <input type="text" id="class-period" placeholder="e.g., 3rd Period" autocomplete="off">
+      </div>
+    </div>
+    <button class="btn btn-primary" id="login-btn">Save &amp; continue →</button>
+  </section>
+
+  <section id="signed-in-card" style="display:none">
+    <div class="card" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+      <div>
+        <div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px">Signed in as</div>
+        <div style="font-size:1.1rem;font-weight:700" id="signed-name">—</div>
+        <div style="color:var(--text-muted);font-size:0.9rem" id="signed-class">—</div>
+      </div>
+      <button class="btn btn-ghost" id="signout-btn">Sign out</button>
+    </div>
+
+    <div class="section-title">Choose an exam</div>
+    <div class="exam-grid" id="exam-grid"></div>
+
+    <div class="section-title">Your recent attempts</div>
+    <div class="card">
+      <div id="attempts-wrap"><div class="empty-msg">No attempts yet on this device.</div></div>
+      <div style="margin-top:14px;text-align:right">
+        <button class="btn btn-ghost" id="clear-attempts" style="font-size:0.8rem;padding:6px 12px">Clear local history</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="card" style="background:transparent;border-style:dashed">
+    <h2 style="font-size:1.05rem">How this works</h2>
+    <ul style="margin-top:10px;padding-left:20px;line-height:1.7;color:var(--text-muted);font-size:0.92rem">
+      <li>You will get a randomized set of questions weighted by official CompTIA domains.</li>
+      <li>The timer starts the moment the exam loads. When it hits 0, the exam auto-submits.</li>
+      <li>You can flag questions, jump around, and review answers before submitting.</li>
+      <li>Your final score is reported on the CompTIA 100–900 scale with pass/fail.</li>
+      <li>If your teacher has set up score submission, your score is sent automatically when the exam ends.</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>CompTIA Exam Portal · companion to the <a href="https://knightofspades00.github.io/Comptia-Study-Library/">CompTIA Study Library</a></footer>
+
+<script src="js/config.js"></script>
+<script src="js/auth.js"></script>
+<!-- Load the question pools so we can show accurate counts on each card. -->
+<script src="js/questions/techplus.js"></script>
+<script src="js/questions/aplus_core1.js"></script>
+<script src="js/questions/aplus_core2.js"></script>
+<script src="js/questions/netplus.js"></script>
+<script src="js/questions/_supplements.js"></script>
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+
+  function showSignedIn(s) {
+    $('login-card').style.display = 'none';
+    $('signed-in-card').style.display = '';
+    $('signed-name').textContent  = s.name;
+    $('signed-class').textContent = s.classPeriod ? 'Class period: ' + s.classPeriod : 'No class period set';
+    renderExams();
+    renderAttempts();
+  }
+  function showLogin() {
+    $('login-card').style.display = '';
+    $('signed-in-card').style.display = 'none';
+  }
+
+  function renderExams() {
+    const grid = $('exam-grid');
+    grid.innerHTML = '';
+    Object.values(window.EXAMS).forEach(ex => {
+      const poolSize = (window.QUESTION_POOLS && window.QUESTION_POOLS[ex.id])
+        ? window.QUESTION_POOLS[ex.id].length : 0;
+      const effectiveCount = Math.min(ex.questionCount, poolSize);
+      const isShort = effectiveCount < ex.questionCount;
+      const card = document.createElement('a');
+      card.className = 'exam-card ' + ex.styleClass;
+      card.href = 'exam.html?exam=' + encodeURIComponent(ex.id);
+      card.innerHTML =
+        '<div class="exam-code">' + ex.code + '</div>' +
+        '<h3>' + ex.name + '</h3>' +
+        '<div class="exam-meta">' +
+          '<strong>' + effectiveCount + '</strong> questions' +
+          (isShort ? ' <span style="color:var(--accent-yellow);font-size:0.75rem">(pool below full ' + ex.questionCount + ')</span>' : '') +
+          ' · <strong>' + ex.timeMinutes + '</strong> min · ' +
+          'pass at <strong>' + ex.passScaled + '</strong>/900' +
+        '</div>' +
+        '<div class="start-btn">Start exam →</div>';
+      grid.appendChild(card);
+    });
+  }
+
+  function renderAttempts() {
+    const list = window.AttemptsStore.getAll();
+    const wrap = $('attempts-wrap');
+    if (!list.length) {
+      wrap.innerHTML = '<div class="empty-msg">No attempts yet on this device.</div>';
+      return;
+    }
+    wrap.innerHTML = '<div class="attempts-list">' + list.map(a => {
+      const date = new Date(a.completedAt);
+      const dateTxt = date.toLocaleDateString() + ' · ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const cls = a.passed ? 'pass' : 'fail';
+      return '<div class="attempt-row">' +
+        '<div><div class="attempt-exam">' + a.examName + '</div>' +
+        '<div class="attempt-date">' + dateTxt + '</div></div>' +
+        '<div class="attempt-score ' + cls + '">' + a.scaledScore + ' / 900<br>' +
+        '<span style="font-size:0.75rem;font-weight:400">' + a.rawCorrect + '/' + a.rawTotal + '</span></div>' +
+      '</div>';
+    }).join('') + '</div>';
+  }
+
+  function loginAction() {
+    const name = $('student-name').value.trim();
+    const cls  = $('class-period').value.trim();
+    if (name.length < 2) {
+      $('student-name').style.borderColor = 'var(--warning)';
+      $('student-name').focus();
+      return;
+    }
+    window.SessionStore.set({ name, classPeriod: cls });
+    showSignedIn(window.SessionStore.get());
+  }
+
+  function signOutAction() {
+    if (!confirm('Sign out? Your stored attempts will remain on this device.')) return;
+    window.SessionStore.clear();
+    $('student-name').value = '';
+    $('class-period').value = '';
+    showLogin();
+  }
+
+  $('login-btn').addEventListener('click', loginAction);
+  $('student-name').addEventListener('keydown', e => { if (e.key === 'Enter') loginAction(); });
+  $('class-period').addEventListener('keydown', e => { if (e.key === 'Enter') loginAction(); });
+  $('signout-btn').addEventListener('click', signOutAction);
+  $('clear-attempts').addEventListener('click', () => {
+    if (!confirm('Clear all attempt history on this device? This cannot be undone.')) return;
+    window.AttemptsStore.clear();
+    renderAttempts();
+  });
+
+  const existing = window.SessionStore.get();
+  if (window.SessionStore.isValid(existing)) {
+    showSignedIn(existing);
+  } else {
+    $('student-name').focus();
+  }
+})();
+</script>
+
+</body>
+</html>
