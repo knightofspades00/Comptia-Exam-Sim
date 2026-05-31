@@ -836,6 +836,139 @@
       answer: 3, exp: 'Read-only / Viewer fits "view only." Granting Modify or Full Control violates least privilege. Always start with the minimum permission needed and raise it only when justified.' }
   ]);
 
+  /* ----------------- A+ Core 2 — harder scenario questions ----------------- */
+  add('aplus2', [
+    /* D1 — Operating Systems */
+    { domain: 'D1', q: 'A user reports their Windows 11 laptop boots into a recovery screen after the latest cumulative update. Which is the BEST FIRST action that avoids data loss?',
+      opts: ['Reinstall Windows from scratch', 'Choose "Startup Repair," and if that fails, "Uninstall the most recent update" from Advanced options', 'Replace the SSD', 'Reset BIOS to defaults'],
+      answer: 1, exp: 'Windows Recovery Environment provides automated repair AND a "Uninstall Updates" option specifically for situations like this. Both preserve user files. Reinstall is last resort; hardware swap is unjustified by an update-related symptom.' },
+    { domain: 'D1', q: 'A user wants to make their existing C: partition smaller to create a second partition for personal files without losing data. Which Windows utility is MOST appropriate?',
+      opts: ['Format from File Explorer', 'Disk Management → Shrink Volume', 'Reinstall Windows', 'BIOS partitioning tool'],
+      answer: 1, exp: 'Shrink Volume in Disk Management resizes a partition while preserving data. Format erases the partition. Reinstall is unnecessary. BIOS does not partition drives.' },
+    { domain: 'D1', q: 'A workstation joined to a Windows domain has both a Group Policy Object (GPO) and a local policy setting that conflict on screen-lock timeout. Which value takes effect?',
+      opts: ['The local policy', 'The GPO (domain) policy takes precedence over the local policy', 'Whichever was changed last', 'Neither — the system uses defaults when there is a conflict'],
+      answer: 1, exp: 'Policy precedence on a domain-joined machine: Local → Site → Domain → Organizational Unit (LSDOU), with later overriding earlier. So domain GPO overrides the local policy for the screen-lock setting.' },
+    { domain: 'D1', q: 'A technician needs to view user-specific Windows settings while logged in as that user. Which registry hive contains user-specific configuration for the CURRENT logged-on user?',
+      opts: ['HKEY_LOCAL_MACHINE (HKLM)', 'HKEY_CURRENT_USER (HKCU)', 'HKEY_CLASSES_ROOT (HKCR)', 'HKEY_USERS (HKU)'],
+      answer: 1, exp: 'HKCU holds the active user\'s settings (mapped from HKEY_USERS\\<SID>). HKLM holds system-wide settings. HKU holds all loaded user profiles. HKCR is a merged view of file associations.' },
+    { domain: 'D1', q: 'On a Linux server, a file listing shows: -rwxr-xr-- 1 root admin script.sh. Which BEST describes the permissions?',
+      opts: ['Everyone can read, write, and execute the file', 'Owner (root) has full access; group (admin) can read and execute; others can only read', 'Only root can read it', 'Nobody can execute it'],
+      answer: 1, exp: 'The 9 permission bits split into owner/group/other (rwx = read/write/execute). rwx r-x r-- = owner full, group read+execute, others read-only. Useful: chmod 754 produces this.' },
+    { domain: 'D1', q: 'A technician needs a filesystem that lets a single external drive be read and written by both Windows and macOS without third-party drivers, and supports files larger than 4 GB. Which is BEST suited?',
+      opts: ['NTFS', 'FAT32', 'exFAT', 'APFS'],
+      answer: 2, exp: 'exFAT is read/write supported natively by Windows and macOS, with no 4 GB file size limit (FAT32\'s biggest constraint). NTFS is Windows-native; macOS reads it but cannot write without third-party drivers. APFS is macOS-native, not natively writable on Windows.' },
+    { domain: 'D1', q: 'A user wants to change a Windows service from "Manual" to start automatically at boot. Which tool is BEST suited?',
+      opts: ['Task Manager → Startup', 'Services (services.msc) → set Startup Type to Automatic', 'System Configuration → Startup', 'Registry Editor → HKCR'],
+      answer: 1, exp: 'services.msc is the dedicated tool for service startup type configuration. Task Manager → Startup manages startup apps, not services. msconfig shows services but does not set type. Direct registry edits are error-prone.' },
+    { domain: 'D1', q: 'A new Windows installation needs to start from a USB drive, but the laptop keeps booting from the internal SSD. Where is the BEST place to change this?',
+      opts: ['Windows Settings → Update & Security', 'Disk Management', 'UEFI/BIOS firmware settings → Boot Order (or one-time boot menu)', 'Device Manager'],
+      answer: 2, exp: 'Boot device order is a firmware (UEFI/BIOS) setting. Use the one-time boot menu (often F12/F11/Esc at POST) or change the persistent boot order in firmware. Windows tools cannot change pre-Windows boot order.' },
+    { domain: 'D1', q: 'A user reports their Mac runs hot and the spinning beach ball appears often when starting apps. Activity Monitor shows "mds_stores" using high CPU. Which is the MOST likely cause?',
+      opts: ['A failing CPU', 'Spotlight is re-indexing — common after major OS upgrades, large data copies, or when a new drive is connected', 'macOS needs reinstalling', 'The keyboard is broken'],
+      answer: 1, exp: 'mds_stores is Spotlight\'s indexing process. High CPU is normal during re-indexing after upgrades or bulk file changes; it settles within hours. Excluding noisy folders in Spotlight preferences mitigates the impact.' },
+    { domain: 'D1', q: 'A workstation must be joined to the office Active Directory domain. Which step BEST describes how a technician completes the join from Windows 11 Pro?',
+      opts: ['Settings → System → About → Domain or workgroup → change to Domain', 'Type "joindomain" in cmd', 'Disable the local administrator account', 'Reinstall Windows in Pro mode'],
+      answer: 0, exp: 'In Windows 11 Pro, domain join is in Settings → System → About → Domain or workgroup (or the older sysdm.cpl → Computer Name → Change). Requires a domain account with join rights. Windows Home cannot join domains.' },
+
+    /* D2 — Security */
+    { domain: 'D2', q: 'A user enabled BitLocker on their laptop and now sees a recovery key prompt at boot after a TPM-related firmware change. Where is the BitLocker recovery key MOST likely to be available?',
+      opts: ['Printed on the BIOS sticker', 'Saved to the user\'s Microsoft account or, on a corporate device, Azure AD / Active Directory by the IT department', 'In the user\'s Documents folder', 'On the back of the laptop case'],
+      answer: 1, exp: 'BitLocker recovery keys are saved (depending on configuration) to the user\'s Microsoft account, Azure AD, on-prem AD, printed/saved to USB, or in a file. Corporate machines almost always escrow to AD/Azure. Document the policy before enabling BitLocker.' },
+    { domain: 'D2', q: 'A user opened an email attachment and notices their files now have a .crypt extension and a ransom note appears. What is the MOST appropriate FIRST action?',
+      opts: ['Pay the ransom immediately', 'Disconnect the workstation from the network to stop lateral spread, then notify IT/security', 'Reboot and hope it goes away', 'Reply to the ransom email'],
+      answer: 1, exp: 'Containment is step 1 of CompTIA\'s incident response: stop the spread. Disconnect from the network (do NOT power off — it may discard forensic memory). Then escalate. Rebooting will not undo encryption.' },
+    { domain: 'D2', q: 'A user complains that UAC prompts pop up every time they install software. The IT manager wants to balance security with usability. Which UAC level is the BEST default?',
+      opts: ['Always notify', 'Notify me when apps try to make changes (default — secure desktop)', 'Never notify (turn UAC off)', 'Always notify and require a password'],
+      answer: 1, exp: 'The default UAC level notifies on app-initiated changes while suppressing notifications for user-initiated settings changes — the right balance for most users. "Always notify" is more secure but annoying; "Never notify" disables UAC and is unsafe.' },
+    { domain: 'D2', q: 'A small office is configuring a new wireless access point. Which BEST combination of settings would the technician choose?',
+      opts: ['WPA2-Personal + TKIP', 'WPA3-Personal (or WPA2-Personal with AES/CCMP)', 'WEP', 'Open network with hidden SSID'],
+      answer: 1, exp: 'WPA3 is current best practice; WPA2-Personal with AES/CCMP is the safe fallback for older clients. TKIP is deprecated. WEP is broken. Hidden SSIDs do not improve security.' },
+    { domain: 'D2', q: 'A company wants a stronger second factor for VPN access than SMS. Which option is MOST resistant to common attacks (SIM-swap, phishing, malware)?',
+      opts: ['A 6-digit PIN', 'SMS one-time code', 'An authenticator app generating TOTP codes', 'A FIDO2 hardware security key (e.g., YubiKey)'],
+      answer: 3, exp: 'FIDO2/WebAuthn hardware keys are resistant to phishing (origin-bound) and not interceptable like SMS. TOTP apps are better than SMS but still phishable. PIN alone is single-factor.' },
+    { domain: 'D2', q: 'A company policy locks accounts after 5 failed login attempts for 15 minutes. A user complains they are constantly locked out. The IT team determines the user is mistyping. Which BEST balances security and user productivity?',
+      opts: ['Disable account lockout entirely', 'Educate the user, and consider increasing the threshold (e.g., 10 attempts) and/or lowering the lockout duration', 'Reset their password every week', 'Disable the user\'s account'],
+      answer: 1, exp: 'Lockout policy must balance brute-force resistance with usability. Adjusting the threshold/duration and educating users is the right response. Disabling lockout opens the door to brute-force; disabling the user is punitive.' },
+
+    /* D3 — Software Troubleshooting */
+    { domain: 'D3', q: 'A user reports that their Windows workstation takes 4 minutes to fully boot to a usable desktop. Task Manager → Startup shows 18 enabled apps with several "High" impact. Which is the BEST FIRST action?',
+      opts: ['Reinstall Windows', 'Disable unneeded high-impact startup apps and re-test boot time', 'Replace the SSD', 'Run a virus scan only'],
+      answer: 1, exp: 'High-impact startup apps directly extend login time. Disabling unnecessary ones is the highest-yield smallest action. Hardware swap or reinstall is far too aggressive when a software change has a measurable impact.' },
+    { domain: 'D3', q: 'A specific application keeps crashing immediately after launch. It worked fine until a recent driver update. Other apps are unaffected. Which is the MOST appropriate FIRST step?',
+      opts: ['Reinstall Windows', 'Roll back the most recent driver via Device Manager', 'Replace the motherboard', 'Disable the firewall'],
+      answer: 1, exp: 'When a driver update precedes a single-app failure, rolling back is the targeted fix. Device Manager → device → Driver → Roll Back. Reinstalling the OS or swapping hardware is excessive for a localized issue.' },
+    { domain: 'D3', q: 'A Windows update fails repeatedly with error 0x80070070 ("There is not enough space available on the disk"). Which is the MOST appropriate action?',
+      opts: ['Reinstall Windows', 'Free up disk space (delete temporary files, run Disk Cleanup) so the update has room', 'Replace the RAM', 'Disable Windows Update'],
+      answer: 1, exp: '0x80070070 means low free space. Windows Update requires several GB of free space, especially for feature updates. Disk Cleanup is the safest, fastest action to free space.' },
+    { domain: 'D3', q: 'A user reports their browser homepage and default search engine changed by themselves, and ads now appear on pages that didn\'t have them. Which BEST diagnoses and resolves?',
+      opts: ['Replace the laptop', 'Check installed browser extensions for unknown ones, reset browser settings, run anti-malware scan', 'Reinstall Windows immediately', 'Disable the firewall'],
+      answer: 1, exp: 'Browser hijack symptoms (changed homepage/search, injected ads) are usually malicious or unwanted browser extensions/PUPs. Remove unknown extensions, reset browser, and scan with a reputable anti-malware tool.' },
+    { domain: 'D3', q: 'A user just installed a new piece of software and Windows says it cannot be activated. Other software activates fine. Which is the MOST appropriate FIRST action?',
+      opts: ['Reinstall Windows', 'Verify the license key entered, check for an active internet connection, and contact the software vendor for activation issues', 'Replace the network card', 'Reset the BIOS'],
+      answer: 1, exp: 'Per-application activation issues are usually the application\'s license server or the entered key — not the OS or hardware. Step 1: validate key + connectivity; step 2: vendor support.' },
+
+    /* D4 — Operational Procedures */
+    { domain: 'D4', q: 'An urgent security patch must go to all workstations TODAY due to an active exploit. Which BEST describes the appropriate change-management classification?',
+      opts: ['Normal change — submit and wait for the next change-advisory board', 'Emergency change — expedited approval and documentation, with a post-implementation review', 'Pre-approved standard change — no record needed', 'Skip the change-management process to save time'],
+      answer: 1, exp: 'Emergency change exists for time-sensitive risks. It uses an expedited approval path but still requires documentation and post-implementation review. Skipping the process violates SOP and audit requirements.' },
+    { domain: 'D4', q: 'A workstation is being retired and the hard drive contained sensitive customer PII. Which method is the MOST APPROPRIATE for an SSD?',
+      opts: ['Physical degaussing', 'Cryptographic erase (Secure Erase) or physical shredding of the drive', 'Multiple-pass overwrite (DoD 5220.22-M)', 'Format the drive once'],
+      answer: 1, exp: 'SSDs do not respond to magnetic degaussing, and multi-pass overwrites are ineffective due to wear-leveling. Cryptographic erase (built into modern SSDs) or physical destruction are the recommended methods.' },
+    { domain: 'D4', q: 'A user is leaving the company. Which is the BEST step BEFORE deleting their files?',
+      opts: ['Wait one year before any action', 'Confirm the proper records-retention policy, preserve files needed for business continuity, and disable (not delete) the account first', 'Delete everything immediately to free disk space', 'Just lock the account and ignore the files'],
+      answer: 1, exp: 'Offboarding follows policy: disable the account on or before last day, retain files per records-retention requirements, then delete according to policy. Premature deletion can destroy required business records.' },
+    { domain: 'D4', q: 'A small business takes a full backup weekly and incremental backups daily. The full was Sunday, with incrementals Mon-Fri. The server fails Friday afternoon. To restore, the technician needs to apply:',
+      opts: ['Just Friday\'s incremental', 'The Sunday full + every incremental Mon-Fri, in order', 'Just the Sunday full', 'Two random backups'],
+      answer: 1, exp: 'An incremental contains changes since the LAST backup of any type. Restore = full + every incremental in order. Differential backups, in contrast, would require only the full + the most recent differential.' },
+    { domain: 'D4', q: 'A user reports that a coworker is regularly browsing personal social media on their work laptop. Which BEST describes the FIRST step the user/IT should take per typical company policy?',
+      opts: ['Confront the coworker publicly', 'Refer to the company\'s Acceptable Use Policy (AUP) and escalate to the appropriate manager or HR if it is in violation', 'Disable the coworker\'s laptop remotely without notice', 'Post about it on social media'],
+      answer: 1, exp: 'AUP violations follow defined HR/management escalation. Bypassing the policy or taking unilateral disciplinary action exposes IT to liability and is inappropriate.' },
+    { domain: 'D4', q: 'A technician finishes a complex repair across three workstations. Which document/record is MOST important to update BEFORE closing the ticket?',
+      opts: ['The vendor\'s marketing newsletter', 'The incident ticket with detailed actions taken, parts used, and resolution, plus the asset inventory if hardware was replaced', 'A personal blog post', 'The HR file'],
+      answer: 1, exp: 'Documentation in the ticket plus asset-inventory updates form the record for future audits, warranty claims, and pattern detection. Skipping this loses institutional knowledge and creates compliance gaps.' }
+  ]);
+
+  /* ----------------- A+ Core 2 — additional PBQ ---------------------------- */
+  add('aplus2', [
+    { type: 'pbq', domain: 'D1',
+      q: 'PBQ — Windows boot recovery: A user reports their Windows 11 workstation now reboots into the recovery screen after the latest update. Files must NOT be lost.',
+      steps: [
+        { kind: 'single',
+          text: 'Step 1: From Windows Recovery Environment, what is the BEST FIRST option to try?',
+          opts: [
+            'Reset this PC → "Remove everything"',
+            '"Startup Repair" — automated repair that preserves files',
+            'Restart from a Windows install USB and reinstall',
+            'Replace the SSD'
+          ],
+          answer: 1
+        },
+        { kind: 'multi', selectCount: 2,
+          text: 'Step 2: Startup Repair did not resolve the issue. Select TWO appropriate NEXT options (still in WinRE).',
+          opts: [
+            '"Uninstall Updates" → remove the most recent quality/feature update',
+            'Open Command Prompt and run "DISM /Online /Cleanup-Image /RestoreHealth"',
+            'Reformat the disk and reinstall Windows fresh',
+            'Replace the motherboard',
+            'Disable secure boot in BIOS'
+          ],
+          answer: [0, 1]
+        },
+        { kind: 'single',
+          text: 'Step 3: After recovery, which proactive step BEST reduces recurrence on future updates?',
+          opts: [
+            'Disable Windows Update entirely',
+            'Enable System Restore points so a future bad update is easier to roll back, and verify there is enough disk space for updates',
+            'Replace the workstation every six months',
+            'Stop scanning for malware'
+          ],
+          answer: 1
+        }
+      ],
+      exp: 'Windows Recovery flow: Startup Repair → Uninstall Updates → DISM/SFC → System Restore → as a last resort Reset/Reinstall. Most "won\'t boot after update" issues resolve at the Uninstall Updates step. Proactively: enable Restore Points, monitor free space.'
+    }
+  ]);
+
   /* ----------------- A+ Core 1 — harder scenario questions ----------------- */
   add('aplus1', [
     /* D1 — Mobile Devices */
@@ -934,6 +1067,148 @@
     { domain: 'D5', q: 'A workstation\'s SMART status reports "imminent failure" on the system drive. The user has not noticed any issues. Which is the BEST action?',
       opts: ['Ignore SMART — it is unreliable', 'Back up immediately, then clone or migrate to a new drive', 'Defragment the drive', 'Run chkdsk /r and continue using the drive indefinitely'],
       answer: 1, exp: 'SMART "imminent failure" is the drive\'s controller predicting it from internal counters (reallocated sectors, etc.). Act now: back up critical data, then clone or migrate to a new drive. chkdsk does not extend the drive\'s life meaningfully.' }
+  ]);
+
+  /* ----------------- Network+ — harder scenario questions ------------------ */
+  add('netplus', [
+    /* D1 — Networking Concepts */
+    { domain: 'D1', q: 'A user needs to remember the OSI layers. A coworker shows the encapsulation order, top-down, as Data → Segment → Packet → Frame → Bits. Which PDU corresponds to Layer 3 (Network)?',
+      opts: ['Frame', 'Packet', 'Segment', 'Bits'],
+      answer: 1, exp: 'PDU by layer: L7-L5 = Data, L4 = Segment (TCP) or Datagram (UDP), L3 = Packet, L2 = Frame, L1 = Bits. Routers operate on packets.' },
+    { domain: 'D1', q: 'A network technician needs to identify a protocol that runs on TCP port 443. Which is MOST likely?',
+      opts: ['DNS', 'HTTPS / TLS', 'SSH', 'SMTP'],
+      answer: 1, exp: 'TCP 443 = HTTPS (HTTP over TLS). DNS uses UDP/TCP 53. SSH uses TCP 22. SMTP uses TCP 25/587/465.' },
+    { domain: 'D1', q: 'A small office uses 192.168.1.0/24. They need to support more than 250 devices on the same subnet. Which prefix length would BEST accommodate ~500 hosts?',
+      opts: ['/24 (256 addresses, 254 usable)', '/23 (512 addresses, 510 usable)', '/22 (1024 addresses, 1022 usable)', '/25 (128 addresses, 126 usable)'],
+      answer: 1, exp: '/23 = 9 host bits → 2^9 − 2 = 510 usable hosts. Just enough for 500. /22 would also work but is more than needed. Plan for some growth but not waste.' },
+    { domain: 'D1', q: 'Given the IP 10.50.100.130 with subnet mask 255.255.255.192, what is the network ID?',
+      opts: ['10.50.100.0', '10.50.100.128', '10.50.100.130', '10.50.100.192'],
+      answer: 1, exp: 'Mask 255.255.255.192 = /26, block size 64 in the last octet. Subnets: .0, .64, .128, .192. 130 falls into the .128–.191 range, so the network ID is 10.50.100.128.' },
+    { domain: 'D1', q: 'Which CIDR prefix provides EXACTLY 30 usable host addresses per subnet?',
+      opts: ['/26 (62 hosts)', '/27 (30 hosts)', '/28 (14 hosts)', '/29 (6 hosts)'],
+      answer: 1, exp: '/27 = 5 host bits → 2^5 − 2 = 30 usable. /26 = 62, /28 = 14, /29 = 6. Subnetting math: prefix /(32 − host_bits), usable = 2^host_bits − 2.' },
+    { domain: 'D1', q: 'A network admin is documenting a new VLAN setup. Each VLAN is a separate broadcast domain. Which device is REQUIRED to allow traffic between VLANs?',
+      opts: ['Layer 2 switch', 'Hub', 'A Layer 3 device (router or L3 switch with inter-VLAN routing)', 'A WAP'],
+      answer: 2, exp: 'VLANs isolate broadcast domains at Layer 2. Communication between VLANs requires Layer 3 routing — either a router-on-a-stick (subinterfaces) or an L3 switch with SVIs.' },
+    { domain: 'D1', q: 'A company wants to provide highly available public DNS resolution for their internal users. They choose 8.8.8.8 and 1.1.1.1. What kind of service do these provide?',
+      opts: ['Recursive DNS resolvers operated by Google and Cloudflare respectively', 'Authoritative-only DNS root servers', 'DHCP relays', 'NTP time servers'],
+      answer: 0, exp: '8.8.8.8 (Google Public DNS) and 1.1.1.1 (Cloudflare) are recursive resolvers — they perform full recursion on behalf of clients. Root servers are 13 logical anycast services serving the root zone.' },
+
+    /* D2 — Network Implementation */
+    { domain: 'D2', q: 'A technician must connect two switches over a 350-meter run between buildings, with electromagnetic interference present along the path. Which medium is the MOST appropriate?',
+      opts: ['Cat 6a copper', 'Multi-mode fiber (OM4)', 'Single-mode fiber', 'Coaxial RG-6'],
+      answer: 1, exp: 'Multi-mode fiber supports 350 m easily at 10G; single-mode reaches kilometers but is overkill for 350m. Copper maxes at 100 m and is susceptible to EMI. Coax is not used between switches.' },
+    { domain: 'D2', q: 'A network team is configuring a new wireless access point and wants to maximize throughput for laptops within 30 feet while still serving older phones. Which configuration BEST achieves this?',
+      opts: ['2.4 GHz only with 40 MHz channels', 'Dual-band: 5 GHz with 80 MHz channels + 2.4 GHz with 20 MHz channels', '6 GHz only (Wi-Fi 6E)', 'Disable Wi-Fi entirely'],
+      answer: 1, exp: 'Dual-band coverage: 5 GHz 80 MHz for high throughput on capable devices, 2.4 GHz 20 MHz for older phones and broader penetration. 6 GHz alone excludes older clients.' },
+    { domain: 'D2', q: 'A company\'s file server gets a static IPv4 address of 10.10.5.50 via DHCP reservation tied to its MAC. Which BEST describes the benefit over manual static assignment on the server itself?',
+      opts: ['Faster boot times only', 'Central management — the address can be changed from the DHCP server without touching the server\'s OS', 'Higher throughput', 'Reduced ARP overhead'],
+      answer: 1, exp: 'DHCP reservations give a stable address while keeping central control. If subnetting changes, you update one place (the DHCP scope) instead of editing the server\'s OS network settings.' },
+    { domain: 'D2', q: 'A network admin is connecting an Access Layer switch to a Distribution Layer switch and needs to carry traffic for multiple VLANs over a single link. Which BEST describes the required port configuration?',
+      opts: ['Access port (default VLAN)', 'Trunk port (802.1Q tagging)', 'Span port', 'Edge port'],
+      answer: 1, exp: 'A trunk port carries multiple VLANs via 802.1Q tagging. Access ports belong to a single VLAN. SPAN is for monitoring. Trunks are mandatory between switches when more than one VLAN must traverse the link.' },
+    { domain: 'D2', q: 'A new office is being wired. Cat 6a UTP will run from a server room to workstation drops at distances ranging from 20 to 90 meters. Which standard rating supports 10 Gbps over this entire range?',
+      opts: ['Cat 5e', 'Cat 6 (limited to 55m at 10G)', 'Cat 6a (full 100m at 10G)', 'Cat 3'],
+      answer: 2, exp: 'Cat 6a is rated for 10 Gbps to the full 100 m. Cat 6 supports 10 Gbps only up to ~55 m due to alien crosstalk. Cat 5e tops at 1 Gbps. Cat 3 is voice-grade legacy.' },
+
+    /* D3 — Network Operations */
+    { domain: 'D3', q: 'A network admin wants to centrally collect and analyze logs from 50 switches and routers to spot security incidents. Which system is MOST appropriate?',
+      opts: ['Local syslog file on each device', 'A SIEM (Security Information and Event Management) platform', 'NTP server', 'A DHCP relay'],
+      answer: 1, exp: 'SIEMs aggregate logs from many sources, correlate events, and trigger alerts. Local logs do not provide cross-device correlation. SIEM is the standard for security operations at scale.' },
+    { domain: 'D3', q: 'A network team configures SNMPv3 with AES-256 privacy and SHA authentication. What BEST describes the benefit over SNMPv2c?',
+      opts: ['Faster polling', 'Per-message authentication AND encryption — SNMPv2c sends community strings in plaintext', 'Lower CPU usage', 'Smaller packet size'],
+      answer: 1, exp: 'SNMPv3 adds authentication (sha/md5) and privacy (encryption). v2c uses community strings as essentially clear-text passwords. Authentication prevents tampering; privacy prevents eavesdropping.' },
+    { domain: 'D3', q: 'A network admin needs an accurate audit trail showing all configuration changes made on a Cisco switch. Which feature BEST supports this requirement?',
+      opts: ['NTP', 'AAA (Authentication, Authorization, Accounting) with logging to a TACACS+ or RADIUS accounting server', 'DHCP snooping', 'Port mirroring'],
+      answer: 1, exp: 'AAA accounting records what each authenticated user did. Coupled with NTP-synced timestamps and centralized logging, this provides a complete audit trail. NTP alone only sets clocks.' },
+    { domain: 'D3', q: 'A company plans capacity for next year and wants to know if current uplinks need upgrades. Which monitoring approach BEST supports the decision?',
+      opts: ['Only spot-check uplink utilization once', 'Collect NetFlow / sFlow / IPFIX data over weeks/months and analyze peak utilization trends', 'Disable monitoring to reduce overhead', 'Watch the link lights'],
+      answer: 1, exp: 'Capacity planning needs historical trend data: NetFlow/sFlow aggregated over time shows peaks and patterns. Spot-checks miss peak periods.' },
+    { domain: 'D3', q: 'A network admin uses a script to back up router configurations nightly. Which protocol BEST supports SECURE automated copies?',
+      opts: ['TFTP — no auth or encryption', 'SCP or SFTP (SSH-based)', 'HTTP', 'FTP (active)'],
+      answer: 1, exp: 'SCP/SFTP use SSH for authentication and encryption. TFTP is unauth, FTP is plaintext. For backup scripts touching production gear, SSH-based file transfer is the safe default.' },
+
+    /* D4 — Network Security */
+    { domain: 'D4', q: 'A network engineer adds a guest Wi-Fi network. Which combination BEST keeps guest devices off the corporate VLAN AND off other guest devices?',
+      opts: ['Same VLAN as employees, no isolation', 'A separate guest VLAN with client isolation (split-tunnel/AP isolation) enabled', 'Hidden SSID with the corporate VLAN', 'No password but on the corporate VLAN'],
+      answer: 1, exp: 'Guest VLAN provides corporate separation; client (AP) isolation prevents guest-to-guest communication. Both should be enabled. Hidden SSID is not a security control.' },
+    { domain: 'D4', q: 'A company\'s firewall has a rule that allows HTTPS (TCP 443) outbound from any internal source. They want to BLOCK access to one specific malicious domain. Which control is MOST appropriate?',
+      opts: ['Block TCP 443 outbound entirely', 'Implement a content/URL filter or DNS sinkhole for that domain', 'Disable the firewall', 'Replace the firewall'],
+      answer: 1, exp: 'Domain-level blocking requires layer-7 inspection (URL filtering) or DNS-level interception. Blocking TCP 443 entirely breaks all HTTPS. Firewall replacement is unjustified.' },
+    { domain: 'D4', q: 'A security analyst sees repeated authentication failures for the "administrator" account from multiple external IPs. The pattern is one failed attempt every 10 minutes from each IP. What attack type does this BEST describe?',
+      opts: ['Slow brute-force / password-spray to evade account lockout', 'Denial of service', 'Phishing', 'SQL injection'],
+      answer: 0, exp: 'Many sources, low rate per source = password spray designed to stay under lockout thresholds. Defenses: MFA, account-name obscurity, monitoring at the directory level.' },
+    { domain: 'D4', q: 'A network is being designed with defense-in-depth. Which BEST describes the role of an IPS (Intrusion Prevention System) compared to an IDS?',
+      opts: ['IPS only logs; IDS blocks', 'IPS is inline and can block matching traffic; IDS is out-of-band and only alerts', 'They are identical', 'IPS is hardware; IDS is software'],
+      answer: 1, exp: 'IPS sits inline (in the traffic path) and drops/resets connections matching rules. IDS taps a copy of traffic and only alerts. Both have value; IPS provides active enforcement.' },
+
+    /* D5 — Network Troubleshooting */
+    { domain: 'D5', q: 'A user reports they cannot reach the company file server. Other users on the same VLAN reach it fine. From the user\'s workstation, ping to the server times out, but ping to the default gateway succeeds. Which is MOST appropriate FIRST step?',
+      opts: ['Reboot every router', 'Check the user\'s workstation arp cache and try clearing it; verify firewall rules on the user\'s workstation', 'Replace the workstation', 'Reinstall Windows'],
+      answer: 1, exp: 'Local gateway reachable, server not — and others on same VLAN can reach the server. Issue is isolated to the user\'s workstation: ARP cache poisoning, host-firewall rule, or a route. Replace/reinstall is too aggressive.' },
+    { domain: 'D5', q: 'A network engineer runs "tracert 8.8.8.8" and sees the first hop respond, then four hops of "* * *" with no response, then later hops respond normally. What does this MOST likely indicate?',
+      opts: ['The internet is broken', 'Some intermediate routers are configured NOT to respond to traceroute (drop ICMP TTL-exceeded) — the path itself is healthy', 'The user\'s NIC is failing', 'DHCP is misconfigured'],
+      answer: 1, exp: 'Routers often suppress TTL-exceeded responses for security or rate-limiting reasons. If hops resume normally afterward, the path is fine — the silent hops just won\'t reveal themselves to traceroute.' },
+    { domain: 'D5', q: 'A user reports intermittent connectivity from a workstation. Cable tester confirms wiring is good. Switch port stats show frequent CRC errors. Which is the MOST likely cause?',
+      opts: ['User error', 'Cable damage too subtle for the basic tester (e.g., kinks, EMI), bad transceiver, or duplex mismatch causing collisions', 'Software bug', 'Server overload'],
+      answer: 1, exp: 'CRC errors at the switch point at physical-layer issues: cable damage the basic tester missed, a failing transceiver/SFP, or duplex mismatch. Run a more sophisticated test (cable certifier) and check port duplex.' },
+    { domain: 'D5', q: 'A laptop connects to an office Wi-Fi, gets a 169.254.x.x address, and cannot reach anything. Which is the MOST likely cause?',
+      opts: ['The CPU is failing', 'DHCP failed — the workstation self-assigned APIPA. Check DHCP server reachability and scope availability', 'The keyboard is broken', 'The OS needs reinstall'],
+      answer: 1, exp: 'APIPA (169.254/16) is the auto-assigned address when DHCP cannot be reached or has no leases left. Investigate: is DHCP up? Is the scope exhausted? Is a VLAN/firewall blocking DHCP discovery?' },
+    { domain: 'D5', q: 'A user complains that website loads are slow but a wired colleague next to them on the same VLAN sees fast loads. Speed test from the slow user shows 5 Mbps; the colleague\'s tests at 800 Mbps. Which is the MOST appropriate FIRST action?',
+      opts: ['Replace the ISP connection', 'Compare the two users\' link speed/duplex settings; verify the slow user\'s NIC is auto-negotiating to gigabit and the patch cable supports it', 'Reset the corporate router', 'Reinstall Windows on the slow user\'s machine'],
+      answer: 1, exp: 'Single-user slowness while others on the same LAN are fast = local to that workstation: NIC speed/duplex, cable category, or duplex mismatch with the switch. ISP/router actions are unjustified.' },
+    { domain: 'D5', q: 'A network team notices their main internet link is saturating during business hours. Which BEST identifies WHICH applications are consuming the bandwidth?',
+      opts: ['Replace the link with a faster one immediately', 'Use NetFlow / sFlow or a packet capture to identify top talkers and applications', 'Restart the firewall', 'Disable employee internet'],
+      answer: 1, exp: 'Identify before remediating. NetFlow/sFlow tell you what protocols, sources, and destinations consume bandwidth — letting you apply QoS or block as appropriate. Capacity adds without diagnosis often just delay the next saturation.' },
+    { domain: 'D5', q: 'A user reports they can access a SaaS application via web browser but not via the native desktop client. Both are installed on the same laptop. Which is the MOST likely cause?',
+      opts: ['The laptop is failing', 'A firewall rule is blocking the TCP port used by the desktop client but not the HTTPS port used by the browser', 'The browser is corrupted', 'The OS needs reinstalling'],
+      answer: 1, exp: 'Per-application differentiation usually means port-level filtering. Identify the desktop client\'s required ports (often documented by the vendor) and verify firewall rules allow them outbound.' }
+  ]);
+
+  /* ----------------- Network+ — additional PBQ ----------------------------- */
+  add('netplus', [
+    { type: 'pbq', domain: 'D5',
+      q: 'PBQ — Subnetting under load: The IT team must allocate VLANs for a new branch office. Headquarters uses 10.0.0.0/8. The branch will host 3 separate departments needing isolated subnets.',
+      steps: [
+        { kind: 'single',
+          text: 'Step 1: Each department needs to support up to 50 hosts. Which prefix length is the MOST efficient?',
+          opts: [
+            '/24 (254 hosts) — wastes addresses but easy to remember',
+            '/26 (62 hosts) — fits 50 with room to grow',
+            '/27 (30 hosts) — too small',
+            '/28 (14 hosts) — way too small'
+          ],
+          answer: 1
+        },
+        { kind: 'dnd-match',
+          text: 'Step 2: The team chose /26. Map each department to its subnet (starting at 10.10.10.0/26).',
+          items: [
+            { id: 'sales',    label: 'Sales (first /26 block)' },
+            { id: 'eng',      label: 'Engineering (second /26 block)' },
+            { id: 'ops',      label: 'Operations (third /26 block)' }
+          ],
+          buckets: [
+            { id: 'b1', label: '10.10.10.0 – 10.10.10.63' },
+            { id: 'b2', label: '10.10.10.64 – 10.10.10.127' },
+            { id: 'b3', label: '10.10.10.128 – 10.10.10.191' }
+          ],
+          correct: { sales: 'b1', eng: 'b2', ops: 'b3' }
+        },
+        { kind: 'multi', selectCount: 2,
+          text: 'Step 3: Select TWO design BEST practices for the new branch.',
+          opts: [
+            'Use the same DHCP scope for all VLANs to simplify',
+            'Use a separate DHCP scope per VLAN with appropriate default gateway and DNS',
+            'Document subnet assignments and reserved address ranges',
+            'Skip documentation to save time',
+            'Disable the firewall for the new branch'
+          ],
+          answer: [1, 2]
+        }
+      ],
+      exp: '/26 = block size 64, supports 62 usable hosts per subnet — comfortable margin for 50. Department subnets land at .0/.64/.128/.192 boundaries. Each VLAN needs its own DHCP scope with its gateway; documentation is essential for ongoing management.'
+    }
   ]);
 
 })();
