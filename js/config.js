@@ -9,7 +9,7 @@
  *
  * Example: 'https://script.google.com/macros/s/AKfycby.../exec'
  */
-window.SCORE_SUBMISSION_URL = null;
+window.SCORE_SUBMISSION_URL = https://script.google.com/macros/s/AKfycbyX38-yXm4lXfuQFODXGl3F8laREzszKue1XpLJzi467zEdhD75_O5uSiH2aT38vHg/exec
 
 /**
  * Exam metadata. The values for length / time / pass threshold mirror the
