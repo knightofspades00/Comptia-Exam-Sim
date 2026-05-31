@@ -1462,4 +1462,296 @@
     }
   ]);
 
+  /* =========================================================================
+     Tech+ — CHALLENGE-GRADE additions (final batch, 2026-05-31)
+     Authored to meet the difficulty bar of the actual FC0-U71 exam:
+     longer multi-sentence scenarios, multi-step reasoning, plausibly-
+     correct distractors, careful BEST/MOST/FIRST disambiguation. Used
+     when the school's class block (2 hours) requires students to engage
+     with the test for longer.
+     ========================================================================= */
+  add('techplus', [
+    /* D1 — IT Concepts & Terminology */
+    { domain: 'D1', q: 'A user describes a problem to a technician using terms like "thingy" and "weird popup." The technician needs to gather usable information to identify the problem. Which approach BEST balances thoroughness with respect for the user\'s time?',
+      opts: [
+        'Ask the user to write a detailed essay describing every symptom',
+        'Ask focused open-ended questions ("What were you doing when this started?") followed by closed clarifying questions ("Did you see a specific error message?") and confirm understanding by paraphrasing back',
+        'Take over the workstation immediately without further conversation',
+        'Tell the user to figure it out themselves'
+      ],
+      answer: 1,
+      exp: 'Identify-the-problem requires gathering symptoms efficiently. Open-ended questions surface symptoms; closed questions narrow scope. Paraphrasing confirms understanding before acting. Skipping the user input is a common failure mode that leads to wrong fixes.' },
+    { domain: 'D1', q: 'After resolving an issue, a technician verifies functionality with the user, then begins to document. Which combination BEST captures what good post-resolution documentation should contain?',
+      opts: [
+        'Just the date of the fix',
+        'Symptom(s) reported, root cause identified, actions taken (in order), parts/software changed, verification result, and recommendations to prevent recurrence',
+        'Only the user\'s contact information',
+        'A list of unrelated tickets'
+      ],
+      answer: 1,
+      exp: 'Useful documentation enables future troubleshooting, audit, warranty/parts tracking, and recurrence prevention. Capturing symptoms-cause-actions-verification-recommendations gives the next technician (or you in six months) a complete picture.' },
+    { domain: 'D1', q: 'A small business owner buys two laptops advertised as "8 GB RAM, 256 GB storage" each. One is much faster than the other. The slower laptop uses an HDD; the faster uses an NVMe SSD. Which BEST explains the difference?',
+      opts: [
+        'RAM speed is the only factor in laptop performance',
+        'Storage type significantly affects perceived speed (boot, app launch, file open), often more than headline RAM/storage sizes suggest',
+        'The HDD laptop has more RAM despite the spec sheet',
+        'Storage type does not affect performance'
+      ],
+      answer: 1,
+      exp: 'Equal RAM and capacity hide real-world differences in storage technology. NVMe SSDs are an order of magnitude faster than HDDs for random reads, dramatically affecting perceived performance — even though the spec sheet looks identical.' },
+    { domain: 'D1', q: 'A user reports a problem that occurs about once a day but is hard to reproduce. The technician needs to gather data over time without staying at the workstation. Which BEST FIRST approach captures useful evidence?',
+      opts: [
+        'Stand next to the workstation all day',
+        'Enable logging / event capture (Event Viewer, Reliability Monitor) and ask the user to note the exact time when the issue recurs so the logs can be correlated',
+        'Ignore the issue until it gets worse',
+        'Replace the workstation without further investigation'
+      ],
+      answer: 1,
+      exp: 'Intermittent issues defeat reactive troubleshooting. Enabling logging and getting the user to note timestamps lets you correlate the symptom with what was happening on the system — without requiring you to witness it directly.' },
+
+    /* D2 — Infrastructure */
+    { domain: 'D2', q: 'A user reports their home Wi-Fi was fast last week and is slow this week. Nothing has changed at home. The user is on the 2.4 GHz band. Which scenario BEST explains the change?',
+      opts: [
+        'The user\'s laptop CPU has slowed down',
+        'A neighbor likely installed a new Wi-Fi network on a nearby 2.4 GHz channel, increasing interference; switching to 5 GHz often resolves this',
+        'The internet always slows down on weekdays',
+        'The router needs more RAM'
+      ],
+      answer: 1,
+      exp: '2.4 GHz has only 3 non-overlapping channels. Adjacent networks degrade throughput dramatically. The fastest fix is to switch capable clients to 5 GHz, or reassign the AP\'s channel.' },
+    { domain: 'D2', q: 'A small office buys a 1 Gbps internet plan. Speed tests on a wired desktop in the back office consistently return ~95 Mbps. The owner\'s laptop tested from the front office shows ~940 Mbps. Which is MOST likely the cause?',
+      opts: [
+        'The ISP is throttling the back office',
+        'The back-office wired connection is going through an older 100 Mbps switch, NIC, or cable rated below gigabit (likely Cat 5 instead of Cat 5e/6)',
+        '95 Mbps is the maximum any wired connection can achieve',
+        'The internet plan is actually 100 Mbps'
+      ],
+      answer: 1,
+      exp: 'Wired connections cap at the slowest link. A 100 Mbps switch port, an old NIC, or Cat 5 cable will force the link to negotiate at 100 Mbps. Auto-negotiation between gigabit-capable endpoints fixes most cases — replace the offending hardware/cable.' },
+    { domain: 'D2', q: 'A user wants to back up 200 GB of photos to the cloud. Their home upload speed is 25 Mbps. Approximately how long will the upload take, assuming no other traffic competes?',
+      opts: [
+        'About 5 minutes',
+        'About 18 hours',
+        'About 3 days',
+        'About 1 hour'
+      ],
+      answer: 1,
+      exp: '25 Mbps ÷ 8 = 3.125 MB/s. 200 GB ≈ 204,800 MB. 204,800 ÷ 3.125 ≈ 65,536 seconds ≈ 18.2 hours. The trap is confusing Mbps (megabits) with MB/s (megabytes) — a factor of 8.' },
+    { domain: 'D2', q: 'A user lives 100 ft from their Wi-Fi router and there is one wall in between. They report fast speeds when sitting next to the router and slow when in the next room. The router supports Wi-Fi 6 on both 2.4 and 5 GHz. Which BEST balances coverage and speed?',
+      opts: [
+        'Disable 2.4 GHz entirely so all devices use 5 GHz',
+        'Keep both bands on; let the laptop auto-select 5 GHz when close and 2.4 GHz when far — or add a mesh node to extend 5 GHz coverage',
+        'Wrap the router in aluminum foil to amplify signal',
+        'Remove the wall'
+      ],
+      answer: 1,
+      exp: '5 GHz is faster but has shorter range and worse wall penetration. 2.4 GHz reaches further. Dual-band lets devices use the right one. For consistent high speed in the far room, a mesh node or AP extends 5 GHz coverage.' },
+    { domain: 'D2', q: 'A small business runs a critical line-of-business application from a single server. They want to ensure the application stays available even if the server\'s hard drive fails. Which BEST describes the approach?',
+      opts: [
+        'Take a backup once a year',
+        'Implement RAID 1 (mirroring) or RAID 5 (parity) on the server\'s storage so a single drive failure does NOT take the application offline, AND maintain regular off-server backups',
+        'Hope nothing fails',
+        'Use the slowest available hard drive to reduce wear'
+      ],
+      answer: 1,
+      exp: 'RAID provides fault tolerance for single drive failures (uptime), but RAID is NOT a backup. The combination is needed: RAID for continued operation, backups for ransomware/corruption/disaster recovery scenarios.' },
+    { domain: 'D2', q: 'A small office is choosing between an on-premises file server and a cloud file service for 25 employees. They need access from home and from the office, with shared editing of documents. Which decision factor MOST strongly favors cloud?',
+      opts: [
+        'On-premises is always faster',
+        'Multi-location access without a VPN, plus built-in collaborative editing and version history — the on-prem option would require firewall/VPN configuration plus separate collaboration tooling',
+        'Cloud is free',
+        'On-premises requires no internet connection ever'
+      ],
+      answer: 1,
+      exp: 'Cloud file services (M365, Google Workspace) handle multi-location access, real-time collaboration, and version history out of the box. On-prem can match this but requires meaningful additional engineering (VPN, conflict resolution, etc.).' },
+    { domain: 'D2', q: 'A user complains their home computer has an "outdated, slow" hard drive. The drive is a 500 GB 7200 RPM HDD, 4 years old, with no SMART errors. The user mostly uses a browser, word processing, and video calls. Which is the MOST cost-effective performance upgrade?',
+      opts: [
+        'Replace the CPU',
+        'Replace the HDD with an SSD (SATA SSD if the system is older, NVMe if supported) — the largest perceived performance gain for most users comes from storage speed',
+        'Add a discrete GPU',
+        'Buy a new monitor'
+      ],
+      answer: 1,
+      exp: 'For everyday browsing and productivity workloads, swapping HDD → SSD is the single largest perceived-performance upgrade. CPU/GPU/monitor changes don\'t address the storage bottleneck that causes most "feels slow" complaints.' },
+
+    /* D3 — Applications & Software */
+    { domain: 'D3', q: 'A user reports they downloaded a "free PDF editor" from a search-engine ad and now ads pop up in their browser even when the browser isn\'t open. Which BEST describes what happened and the first remediation step?',
+      opts: [
+        'The CPU has failed — replace it',
+        'A potentially unwanted program (PUP) or adware was bundled with the installer. Remove it from Programs and Features / Settings → Apps; remove browser extensions; then run reputable anti-malware. In the future, download only from the vendor\'s official site.',
+        'The OS spontaneously generated ads',
+        'The PDF reader is functioning normally'
+      ],
+      answer: 1,
+      exp: 'Free utilities from ads often bundle PUPs/adware. Uninstall the program, prune browser extensions, scan with anti-malware. Educate the user to download from the vendor\'s site (not the top ad) and to read installer screens for "additional offers."' },
+    { domain: 'D3', q: 'A user wants to install software on their work laptop. The IT department blocks installations by standard users. Which security principle does this enforcement BEST illustrate?',
+      opts: [
+        'Defense in depth',
+        'Principle of least privilege — users only get the access required for their job, and admin rights are NOT required for normal work',
+        'Mandatory access control',
+        'Open security'
+      ],
+      answer: 1,
+      exp: 'Restricting standard users from installing software is a textbook least-privilege control. It limits the impact of credential compromise and accidental malware installation. Users needing software request it via IT.' },
+    { domain: 'D3', q: 'A user reports their entire Windows machine has become "slow" since they were given a new web-based application by their employer. The browser uses 4–6 GB of RAM with the app open. The laptop has 8 GB of RAM total. Which BEST explains the slowdown?',
+      opts: [
+        'The web app is hacking the CPU',
+        'Memory pressure — with the web app consuming most available RAM, Windows pages other processes to disk, dramatically slowing everything. Add RAM (16 GB+) or run the app in a tab less often.',
+        'The web app has a virus',
+        'The CPU is degraded'
+      ],
+      answer: 1,
+      exp: 'Modern web apps (especially those with large data sets, video, or complex UIs) can consume gigabytes of RAM. On an 8 GB machine, that triggers paging, which is orders of magnitude slower than RAM. The right fix is more RAM or different workload management.' },
+    { domain: 'D3', q: 'A user is choosing between installing a desktop application and using its web-based counterpart. They need access from multiple devices (work laptop + personal tablet). Which factor MOST strongly favors the web version?',
+      opts: [
+        'Desktop apps are always faster',
+        'Multi-device access without installation, automatic updates, and no per-device licensing — the web version delivers the same logical workspace regardless of device',
+        'Web apps cannot save data',
+        'Desktop apps cannot use a keyboard'
+      ],
+      answer: 1,
+      exp: 'Web/SaaS workloads deliver consistent experience across devices, automatic updates, and centralized data. For multi-device users, the web version usually wins unless the workload requires desktop-class performance.' },
+    { domain: 'D3', q: 'A user installed an open-source application from a public code repository. After installation, antivirus flags it as suspicious. The repository has many stars but the project is unfamiliar to the user. Which is the BEST response?',
+      opts: [
+        'Disable antivirus and continue using the app',
+        'Treat the antivirus alert as a real signal. Review the project\'s reputation (downloads, maintainer history, code review), check for newer versions, or uninstall if not strictly needed. Open-source does NOT mean automatically safe.',
+        'Email the antivirus vendor to complain',
+        'Ignore the warning because open-source is always safe'
+      ],
+      answer: 1,
+      exp: 'Open-source means source is visible — not that it\'s been audited or that the maintainer is trustworthy. Antivirus heuristics aren\'t always right, but never disable AV to "trust" a flagged binary without due diligence on the project.' },
+
+    /* D4 — Software Development Concepts */
+    { domain: 'D4', q: 'A small business owner wants to estimate the gas mileage of their delivery fleet from data captured by their vehicles. The data has hundreds of measurements per vehicle, per day. Which programming construct BEST fits the calculation pattern "for each vehicle, sum the gallons used and miles driven, then compute MPG"?',
+      opts: [
+        'A single constant',
+        'A loop that iterates over each vehicle\'s records, accumulating totals, with a final calculation per vehicle',
+        'A flowchart with no execution',
+        'A single hard-coded number'
+      ],
+      answer: 1,
+      exp: 'Aggregation across many records is the canonical use of a loop with accumulator variables. Per-iteration: read a record, add to running totals. At the end: divide miles by gallons for MPG.' },
+    { domain: 'D4', q: 'A student is writing a program that needs to check if a number is even. Which programming construct fits the logic "if the number is divisible by 2 with no remainder, treat as even; otherwise odd"?',
+      opts: [
+        'A loop',
+        'Branching (an IF/ELSE statement based on the result of "number modulo 2 equals 0")',
+        'A variable',
+        'A constant'
+      ],
+      answer: 1,
+      exp: 'Branching (selection) chooses a path based on a condition. Loops repeat; variables hold values. The modulo operation (n % 2) returns 0 for even numbers; this IF condition decides the branch.' },
+    { domain: 'D4', q: 'A team is designing pseudocode for a payroll calculation. The pseudocode includes "Read employee record. IF salaried THEN compute monthly pay; ELSE compute hourly × hours. Repeat for all employees." Which programming concepts are demonstrated?',
+      opts: [
+        'Only a single function call',
+        'Branching (IF/ELSE based on employee type) AND looping (Repeat for all employees) — the two foundational control structures',
+        'Only constants',
+        'No control structures'
+      ],
+      answer: 1,
+      exp: 'Real programs combine sequence, selection (branching), and iteration (looping). Identifying these constructs in pseudocode is a foundational Tech+ skill.' },
+    { domain: 'D4', q: 'A student is choosing data types for a small inventory program. They need to store: product name, quantity in stock, unit price, and "is this product currently sold?". Which combination is MOST appropriate?',
+      opts: [
+        'String, integer, float (or decimal), boolean — in that order',
+        'Integer, string, boolean, float',
+        'All as strings',
+        'All as integers'
+      ],
+      answer: 0,
+      exp: 'Text → string. Whole-number count → integer. Currency with fractions → float/decimal. True-or-false flag → boolean. Each type fits its data\'s shape and enables proper validation and math.' },
+
+    /* D5 — Data & Database Fundamentals */
+    { domain: 'D5', q: 'A small business runs a spreadsheet with customer info, separate spreadsheets for orders, and another for products. As the business grows, they realize the same customer appears slightly differently across sheets ("J. Smith" vs "John Smith"). Which BEST describes the underlying data-quality issue, and the fix?',
+      opts: [
+        'The spreadsheets are too small',
+        'Inconsistent data and the lack of a single source of truth. Move to a relational database with a Customer table whose primary key is referenced by the Orders table — eliminates duplicate / inconsistent customer rows.',
+        'The spreadsheets are too large',
+        'The customers should change their names'
+      ],
+      answer: 1,
+      exp: 'Spreadsheets allow easy data drift. Relational databases enforce uniqueness (primary keys) and referential integrity (foreign keys), which is the structural fix for "same entity, different spelling" problems.' },
+    { domain: 'D5', q: 'A web app stores customer addresses, but some customers have 1 address and others have 5. The data team wants flexibility without strict schema rules. Which database approach BEST fits?',
+      opts: [
+        'A single fixed-width text file',
+        'A non-relational (document / NoSQL) database where each customer record holds a flexible array of address documents',
+        'A spreadsheet',
+        'A printed binder'
+      ],
+      answer: 1,
+      exp: 'Document databases (MongoDB, Firestore) store nested arrays and varying fields gracefully. Relational schemas can model this with a separate Address table, but document databases handle variability more directly.' },
+    { domain: 'D5', q: 'A teacher wants to know how many students scored above 90% on each of the last 10 quizzes. The raw data sits in a relational database with a Students table, a Quizzes table, and a QuizScores table. Which BEST describes how the teacher gets the answer?',
+      opts: [
+        'Open every record by hand and count',
+        'Write a SQL query joining the tables, filtering by score > 90 and grouping by quiz, then return the counts',
+        'Print all records and tally with a calculator',
+        'Email each student to ask'
+      ],
+      answer: 1,
+      exp: 'Relational databases excel at exactly this: join related tables, filter, group, and aggregate. SQL ("SELECT quiz_id, COUNT(*) FROM QuizScores WHERE score > 90 GROUP BY quiz_id") returns the answer in one query.' },
+    { domain: 'D5', q: 'A nonprofit accepts donations and tracks donor information. They handle PII (names, emails, addresses, donation amounts). Which BEST describes their obligations regarding this data?',
+      opts: [
+        'They have no obligations',
+        'They must classify the data, apply appropriate access controls and encryption, retain it only as long as needed, and respect donor privacy and applicable privacy laws (GDPR/CCPA depending on jurisdiction)',
+        'They must publish all donor names publicly',
+        'They must back up the data, but security does not apply'
+      ],
+      answer: 1,
+      exp: 'PII handling requires classification (what is sensitive), protection (access + encryption), retention limits, and lawful handling. Even a small nonprofit must comply with applicable privacy regulations and donor expectations.' },
+
+    /* D6 — Security */
+    { domain: 'D6', q: 'A user receives a phone call from someone claiming to be from their bank. The caller knows the user\'s name, address, and last 4 digits of their credit card. The caller says there is "suspicious activity" and asks the user to confirm their full credit card number for verification. Which BEST describes the attack and the safest response?',
+      opts: [
+        'The caller is legitimate because they know personal details',
+        'Vishing — attackers can buy partial PII from breach data and use it to seem legitimate. Hang up, call the bank directly using the number on the back of the card, and verify any real alert through that channel.',
+        'The user should give the requested information to clear the issue',
+        'The bank always calls for verification'
+      ],
+      answer: 1,
+      exp: 'Knowing PII does NOT validate the caller. PII is widely available in breach data. The defense is to NEVER act on unsolicited calls — always re-initiate the conversation via a trusted channel (number on the card, official app).' },
+    { domain: 'D6', q: 'A user opened a document attached to an email and noticed their computer is now slow. Files have unusual extensions (.encrypted, .lock). A ransom note demands payment in cryptocurrency. The user is panicking. Which BEST describes the FIRST priority?',
+      opts: [
+        'Pay the ransom quickly',
+        'Disconnect the workstation from the network immediately to stop the encryption from spreading to other systems and shared drives, then notify IT/security and DO NOT pay the ransom',
+        'Reboot the workstation',
+        'Continue working and ignore'
+      ],
+      answer: 1,
+      exp: 'Containment first: stop the spread. Network isolation prevents the malware reaching network shares and other endpoints. Do not pay — it funds attackers and rarely fully recovers data. Restore from clean backups after eradication.' },
+    { domain: 'D6', q: 'A small business owner uses the same password for their email, banking, and three social media accounts. One of the social media sites suffers a data breach. Which BEST describes the cascading risk?',
+      opts: [
+        'No additional risk — only the social media account is affected',
+        'Credential stuffing — attackers try the leaked password against the user\'s email and banking; if any match, those accounts are compromised. The fix is unique passwords per account, ideally via a password manager, plus MFA on the most-critical accounts.',
+        'The user\'s computer will explode',
+        'Only the breached site is at risk'
+      ],
+      answer: 1,
+      exp: 'Password reuse is the #1 cause of cascading account takeover. Credential stuffing automates trying leaked combos against popular sites. A password manager + per-account unique passwords + MFA on critical accounts shuts this down.' },
+    { domain: 'D6', q: 'A user enables MFA on their email using SMS codes. A friend mentions that authenticator apps are more secure than SMS. Which BEST explains why?',
+      opts: [
+        'SMS is faster than authenticator apps',
+        'SMS codes can be intercepted by SIM-swap attacks (where an attacker convinces the carrier to transfer the phone number). Authenticator apps generate codes locally on the device and do NOT depend on the phone number being current.',
+        'SMS codes are always 4 digits and authenticator codes are 8',
+        'Authenticator apps require no security'
+      ],
+      answer: 1,
+      exp: 'SIM-swap attacks are a known weakness of SMS-based MFA. The attacker takes over the phone number and receives SMS codes. Authenticator apps (or hardware keys) eliminate that attack vector by generating codes on the device itself.' },
+    { domain: 'D6', q: 'A user is shopping online and sees a small padlock icon in their browser address bar for the checkout page. Which statement BEST captures what this tells them?',
+      opts: [
+        'The site has been audited by the government',
+        'The connection between the browser and the site is encrypted (HTTPS / TLS) AND the certificate matches the domain — it does NOT certify the site\'s honesty. Verify the domain spelling and the merchant\'s reputation before entering payment info.',
+        'The site has no malware',
+        'The site is risk-free'
+      ],
+      answer: 1,
+      exp: 'The padlock confirms encryption + cert-to-domain match. It does NOT vouch for whether the merchant is honest. Phishing and scam sites also use valid HTTPS. Always verify the actual domain spelling.' },
+    { domain: 'D6', q: 'A school issues each student a laptop. The IT department wants to ensure that if a laptop is lost or stolen, the data on it cannot be read by whoever finds it. Which BEST achieves this?',
+      opts: [
+        'Set a Windows login password and call it done',
+        'Enable full-disk encryption (BitLocker on Windows, FileVault on macOS) so that without the user\'s credentials, the drive contents are unreadable even when the drive is removed',
+        'Hide all files in a single folder',
+        'Disable the Wi-Fi'
+      ],
+      answer: 1,
+      exp: 'Login passwords alone don\'t protect data — a thief can pull the drive and read it externally. Full-disk encryption keeps the data unreadable without the proper credentials, even with physical possession of the drive.' }
+  ]);
+
 })();

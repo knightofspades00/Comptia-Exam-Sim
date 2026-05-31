@@ -35,8 +35,14 @@ window.EXAMS = {
     code: 'FC0-U71',
     name: 'Tech+',
     fullName: 'CompTIA Tech+ (FC0-U71)',
-    questionCount: 75,
-    timeMinutes: 60,
+    // Sized for the school's 2-hour class block — 100 questions in 120 min
+    // (real Tech+ is 75 q / 60 min). Larger item count + extended time
+    // prevents the "I finished in 20 min" gaming pattern. The
+    // minTimeMinutes guard further requires students to engage for at
+    // least 45 minutes before Submit becomes available.
+    questionCount: 100,
+    timeMinutes: 120,
+    minTimeMinutes: 45,
     passScaled: 650,
     // Real Tech+ format: MC + multi-response + drag-and-drop. No PBQs.
     allowedTypes: ['single', 'multi', 'dnd-match'],

@@ -226,6 +226,14 @@ window.addEventListener('DOMContentLoaded', () => {
     ExamState.config.timeMinutes + ' minutes';
   document.getElementById('splash-pass').textContent =
     'pass at ' + ExamState.config.passScaled + ' / 900';
+  if (ExamState.config.minTimeMinutes) {
+    const note = document.getElementById('splash-mintime-note');
+    if (note) {
+      note.style.display = '';
+      note.querySelector('strong').nextSibling.textContent =
+        ' Submit becomes available only after ' + ExamState.config.minTimeMinutes + ' minutes have elapsed. Use the full time — read each question carefully.';
+    }
+  }
 
   // If we have a resumable attempt, offer it.
   if (hasResumable) {
@@ -337,6 +345,7 @@ function startExam(isResume) {
   renderBar();
   renderNavigator();
   renderQuestion();
+  updateMinTimeGuard();   // disable Submit immediately if minTime config is set
   saveInProgress();
 }
 
@@ -366,10 +375,40 @@ function tickTimer() {
   }
   // Time-warning toasts at 30 / 15 / 5 / 1 minute remaining
   maybeShowTimeWarning(remaining);
+  // Minimum-time guard: if the exam config sets minTimeMinutes, the Submit
+  // button stays disabled until that elapsed time has passed. Auto-submit
+  // on timer expiration is unaffected.
+  updateMinTimeGuard();
   if (remaining === 0) {
     clearInterval(ExamState.timerHandle);
     submitExam(true);
   }
+}
+
+function updateMinTimeGuard() {
+  const minMin = ExamState.config?.minTimeMinutes;
+  if (!minMin || !ExamState.startedAt) return;
+  const minMs = minMin * 60 * 1000;
+  const elapsedMs = Date.now() - ExamState.startedAt;
+  const remainGuard = Math.max(0, minMs - elapsedMs);
+  document.querySelectorAll('.btn-danger').forEach(btn => {
+    if (btn.id === 'submit-continue') return;       // 2-step modal button
+    if (btn.id === 'reading-warn-confirm') return;  // reading-warn modal
+    const txt = btn.textContent.trim();
+    if (txt.startsWith('Submit Exam') || txt.startsWith('Available after')) {
+      if (remainGuard > 0) {
+        const gm = Math.floor(remainGuard / 60000);
+        const gs = Math.floor((remainGuard % 60000) / 1000);
+        btn.textContent = 'Available after ' + String(gm).padStart(2, '0') + ':' + String(gs).padStart(2, '0');
+        btn.disabled = true;
+        btn.title = 'Submit becomes available after the minimum exam time has elapsed.';
+      } else {
+        btn.textContent = 'Submit Exam';
+        btn.disabled = false;
+        btn.title = '';
+      }
+    }
+  });
 }
 
 function maybeShowTimeWarning(remainingSec) {
@@ -1157,6 +1196,19 @@ document.addEventListener('keydown', (e) => {
    you sure?" that requires another click to actually submit. Mirrors how
    real Pearson VUE never single-clicks to end a session.                   */
 function confirmSubmit() {
+  // Honor the minimum-time guard even if the student finds another way to
+  // invoke confirmSubmit (keyboard shortcut later, devtools, etc.).
+  const minMin = ExamState.config?.minTimeMinutes;
+  if (minMin && ExamState.startedAt) {
+    const minMs = minMin * 60 * 1000;
+    const elapsedMs = Date.now() - ExamState.startedAt;
+    if (elapsedMs < minMs) {
+      const remainGuard = minMs - elapsedMs;
+      const gm = Math.ceil(remainGuard / 60000);
+      showToast('Submit available in about ' + gm + ' more minute(s).', 'danger');
+      return;
+    }
+  }
   let answered = 0, flagged = 0;
   ExamState.questions.forEach((q, i) => {
     if (isAnswered(q, ExamState.answers[i])) answered++;
