@@ -928,6 +928,55 @@
       answer: 1, exp: 'Documentation in the ticket plus asset-inventory updates form the record for future audits, warranty claims, and pattern detection. Skipping this loses institutional knowledge and creates compliance gaps.' }
   ]);
 
+  /* ----------------- A+ Core 2 — D3 Software Troubleshooting expansion ----- */
+  add('aplus2', [
+    { domain: 'D3', q: 'A user reports a Windows workstation has been throwing intermittent BSODs (varying stop codes) over the past week. The hardware is otherwise functional and event logs show various memory-related errors. Which is the MOST appropriate FIRST step?',
+      opts: ['Reinstall Windows immediately', 'Run Windows Memory Diagnostic or MemTest86 to test the RAM under stress', 'Replace the motherboard', 'Disable Windows Update'],
+      answer: 1, exp: 'Random BSODs with shifting stop codes and memory-related entries in Event Viewer are classic flaky-RAM symptoms. Memory testing is fast, non-destructive, and pinpoints the issue before any hardware swaps.' },
+    { domain: 'D3', q: 'A user reports that one specific application crashes immediately on launch. Other applications work fine. The user has not made any recent changes. Which is the BEST FIRST step?',
+      opts: ['Reinstall Windows', 'Open Event Viewer → Application logs to see the crash event, then try repairing or reinstalling that one application', 'Replace the SSD', 'Disable the firewall'],
+      answer: 1, exp: 'Event Viewer Application logs capture the crash signature (faulting module, exception code). Repair-or-reinstall scoped to that one app is the targeted fix when the OS and other apps are stable.' },
+    { domain: 'D3', q: 'A user reports that their PDF reader frequently closes itself when opening attachments from email. Other apps are unaffected. Which is the MOST likely cause?',
+      opts: ['CPU failure', 'A corrupt or incompatible PDF reader add-in/extension, OR a sandboxed crash on specific document features', 'Hard drive is too full', 'Windows needs reinstalling'],
+      answer: 1, exp: 'Per-app crashes when opening specific content types usually point at add-ins/extensions or the app\'s sandbox. Disable add-ins, try opening directly (not via email), and check vendor for known incompatibilities.' },
+    { domain: 'D3', q: 'A user complains their Windows workstation takes nearly 5 minutes to fully boot to a usable desktop. Task Manager → Startup shows 14 high-impact apps. Which is the BEST FIRST action?',
+      opts: ['Reinstall Windows', 'Disable unnecessary high-impact startup apps and re-measure boot time', 'Replace the workstation', 'Disable all Windows services'],
+      answer: 1, exp: 'High-impact startup apps directly extend login time. Pruning unneeded ones is the smallest, highest-yield action. Disabling services or full reinstall is overkill when a targeted change is available.' },
+    { domain: 'D3', q: 'A user reports their Windows browser keeps redirecting to ad sites, new toolbars appeared, and the default search engine changed without permission. Antivirus shows clean. Which is the MOST appropriate sequence?',
+      opts: ['Reinstall Windows immediately', 'Remove unknown browser extensions, reset browser settings, run a reputable anti-malware (e.g., Malwarebytes), then re-enable trusted extensions only', 'Replace the network card', 'Disable the firewall'],
+      answer: 1, exp: 'Browser hijack symptoms come from PUPs/adware that slip past traditional AV. Extension review + browser reset + anti-malware scan is the canonical fix. Reinstalling the OS is too aggressive.' },
+    { domain: 'D3', q: 'A user installs a Windows update and afterward the workstation freezes for 2-3 seconds every few minutes. Which Windows tool is BEST for narrowing down what process is causing the freeze?',
+      opts: ['Settings', 'Resource Monitor or Reliability Monitor — watch disk/CPU spikes that correlate with the freeze events', 'Notepad', 'BIOS settings'],
+      answer: 1, exp: 'Resource Monitor shows live per-process resource usage. Reliability Monitor lists system stability events with timestamps. Together they pinpoint which process or driver is responsible.' },
+    { domain: 'D3', q: 'A Windows update fails repeatedly with error code 0x80070005 ("ACCESS DENIED"). Which is the MOST likely cause AND the BEST first action?',
+      opts: ['BIOS is misconfigured — reset to defaults', 'Permission issue on the SoftwareDistribution folder — stop the Windows Update service, rename SoftwareDistribution, restart the service, and retry', 'Replace the CPU', 'Disable Windows Defender permanently'],
+      answer: 1, exp: '0x80070005 typically means a permission/ownership problem on Windows Update\'s working folders. Resetting the SoftwareDistribution folder (rename + restart wuauserv) is the standard fix.' },
+    { domain: 'D3', q: 'A user reports their email client (Outlook) cannot connect to the mail server. Webmail works fine in a browser on the same workstation. Which is the MOST appropriate FIRST step?',
+      opts: ['Reinstall Windows', 'Verify the account profile settings (IMAP/SMTP servers, ports, TLS/SSL settings) and connectivity on the configured ports', 'Replace the workstation', 'Reset the BIOS'],
+      answer: 1, exp: 'Webmail working = network and credentials are likely fine. The desktop client uses different ports (IMAP/SMTP) that may be blocked or misconfigured. Verify TLS settings, server names, and port firewall rules.' },
+    { domain: 'D3', q: 'A user\'s Windows profile is showing odd behavior — desktop icons disappear, settings revert, and new files do not save. Event Viewer shows "User Profile Service" warnings. Which is the MOST likely cause?',
+      opts: ['Failed CPU', 'User profile corruption — the profile may be loading as a TEMP profile each session', 'GPU driver is outdated', 'Network cable is loose'],
+      answer: 1, exp: 'User Profile Service events + a "temporary" desktop are classic profile-corruption signatures. Fix: log in as another admin, back up the user\'s data, and either repair the profile (registry edit) or migrate to a fresh profile.' },
+    { domain: 'D3', q: 'A user\'s Android phone is suddenly draining battery very quickly when the phone is idle. The same phone was fine yesterday. Which is the MOST appropriate FIRST step?',
+      opts: ['Buy a new battery', 'Open Settings → Battery → Usage to see which app(s) are consuming power in the background, and force-stop or uninstall outliers', 'Reinstall Android', 'Replace the screen'],
+      answer: 1, exp: 'Sudden battery drain almost always traces to a single misbehaving app (recent install or update). Battery usage screens identify the culprit. Reinstall/replace is excessive without diagnosis.' },
+    { domain: 'D3', q: 'A user reports their iPhone repeatedly crashes a specific app to the home screen, but other apps work. Which is the BEST FIRST step?',
+      opts: ['Restore the iPhone from scratch', 'Check for an update to the app, then delete and reinstall the app if updates do not help', 'Replace the iPhone', 'Disable iCloud'],
+      answer: 1, exp: 'Per-app crashes on iOS are typically resolved by an app update or reinstall. Restoring the device is the very last step; replacement is rarely justified by a single-app issue.' },
+    { domain: 'D3', q: 'A user reports that Windows Search is no longer returning results for files they know exist. The user did not change settings recently. Which is the MOST appropriate FIRST step?',
+      opts: ['Reinstall Windows', 'Rebuild the search index from Control Panel → Indexing Options → Advanced → Rebuild', 'Replace the SSD', 'Disable Cortana'],
+      answer: 1, exp: 'A broken or stale search index is the most common cause of "search finds nothing." Rebuilding takes time but is the targeted fix.' },
+    { domain: 'D3', q: 'A user reports that after a recent driver update, a specific peripheral (printer) no longer works. Other devices on the same workstation are fine. Which is the MOST appropriate FIRST step?',
+      opts: ['Reinstall Windows', 'Open Device Manager → printer device → Driver tab → Roll Back Driver (or uninstall and reinstall the previous driver)', 'Replace the printer', 'Reset BIOS'],
+      answer: 1, exp: 'Single-device failure after a driver update is exactly what Roll Back Driver is for. Less aggressive than reinstalling Windows or replacing hardware.' },
+    { domain: 'D3', q: 'A user reports that their Microsoft 365 apps repeatedly prompt for authentication and won\'t stay signed in. Other web logins on the same workstation work fine. Which is the MOST appropriate FIRST action?',
+      opts: ['Reinstall Windows', 'Clear the Windows Credential Manager entries for Office, sign out and back in to the Microsoft 365 apps, and confirm modern authentication is enabled', 'Replace the workstation', 'Reset the BIOS'],
+      answer: 1, exp: 'Persistent re-auth prompts in Office often stem from stale cached credentials in Windows Credential Manager. Clearing them forces a fresh sign-in. Other apps being unaffected confirms the issue is Office-specific.' },
+    { domain: 'D3', q: 'A user reports an Android phone shows "No Service" intermittently — sometimes reconnecting after a minute, sometimes not for an hour. The phone is one year old, signal coverage in the area is good for other users. Which is the MOST appropriate FIRST step (BEFORE escalating to the carrier)?',
+      opts: ['Replace the phone', 'Reseat the SIM card, toggle Airplane Mode on/off, and try resetting the phone\'s network settings; if no improvement, escalate to the carrier', 'Reinstall Android', 'Disable mobile data'],
+      answer: 1, exp: 'Intermittent "No Service" on a phone with otherwise good area coverage points at SIM seating, carrier registration, or a network-settings issue. Quick local fixes first; carrier diagnostics if those fail.' }
+  ]);
+
   /* ----------------- A+ Core 2 — additional PBQ ---------------------------- */
   add('aplus2', [
     { type: 'pbq', domain: 'D1',
