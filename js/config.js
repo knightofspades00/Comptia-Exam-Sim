@@ -123,6 +123,35 @@ window.EXAMS = {
       { id: 'D4', name: 'Security Operations',                           weight: 28 },
       { id: 'D5', name: 'Security Program Management and Oversight',     weight: 20 }
     ]
+  },
+  arcgis: {
+    id: 'arcgis',
+    code: 'EAPF',
+    name: 'ArcGIS Pro Foundation',
+    fullName: 'Esri ArcGIS Pro Foundation (EAPF)',
+    // Real EAPF: 75 questions, 90 minutes, ~80% to pass (per third-party
+    // practice sources; Esri does not publish a numeric pass score in
+    // the public EIG). Mapped to the portal's 100-900 scaled-score band
+    // with the pass threshold anchored at 720 (= 80% of 900).
+    questionCount: 75,
+    timeMinutes: 90,
+    passScaled: 720,
+    // Multiple-choice only on the EAPF — no PBQs, no D&D in the official
+    // exam. We allow multi-response if authored, since CompTIA-style
+    // "Select TWO" items are still a legitimate study aid.
+    allowedTypes: ['single', 'multi'],
+    styleClass: 'arcgis',
+    // Even split — Esri does not publish official per-domain weighting
+    // in the public materials. The 6 domains track the study hub's
+    // organization and the in-pool question distribution.
+    domains: [
+      { id: 'D1', name: 'Geographic Data Models',           weight: 17 },
+      { id: 'D2', name: 'Coordinate Systems & Projections', weight: 17 },
+      { id: 'D3', name: 'Cartography & Symbology',          weight: 17 },
+      { id: 'D4', name: 'Spatial Analysis & Geoprocessing', weight: 17 },
+      { id: 'D5', name: 'ArcGIS Online & Web GIS',          weight: 16 },
+      { id: 'D6', name: 'Geodatabases, Metadata & Sharing', weight: 16 }
+    ]
   }
 };
 
