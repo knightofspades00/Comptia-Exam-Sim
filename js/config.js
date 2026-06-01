@@ -35,12 +35,13 @@ window.EXAMS = {
     code: 'FC0-U71',
     name: 'Tech+',
     fullName: 'CompTIA Tech+ (FC0-U71)',
-    // Sized for the school's 2-hour class block — 100 questions in 120 min
-    // (real Tech+ is 75 q / 60 min). Larger item count + extended time
-    // prevents the "I finished in 20 min" gaming pattern. The
-    // minTimeMinutes guard further requires students to engage for at
-    // least 45 minutes before Submit becomes available.
-    questionCount: 100,
+    // Stay faithful to the official Tech+ exam content volume (75
+    // questions) but extend the wall-clock to fit the school's 2-hour
+    // class block. The minTimeMinutes guard prevents students from
+    // submitting before 45 minutes have elapsed — no rush-and-leave.
+    // Real Tech+ at Pearson VUE is 75 q / 60 min; this is the same
+    // 75 items with breathing room and a no-early-exit floor.
+    questionCount: 75,
     timeMinutes: 120,
     minTimeMinutes: 45,
     passScaled: 650,
