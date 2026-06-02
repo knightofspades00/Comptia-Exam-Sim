@@ -142,10 +142,8 @@ window.EXAMS = {
     allowedTypes: ['single', 'multi'],
     styleClass: 'arcgis',
     // The four domains and weights mirror Esri's published EAPF_2025 Exam
-    // Information Guide. NOTE: the question pool is currently light on
-    // Mapping & Visualization items (~19) relative to the 36% weight, so
-    // the engine backfills the remaining slots from other domains. Author
-    // more D1 items to fully honor the 36% emphasis.
+    // Information Guide. The pool carries enough questions in every domain
+    // to satisfy its weight at the 75-question draw size.
     domains: [
       { id: 'D1', name: 'Mapping & Visualization', weight: 36 },
       { id: 'D2', name: 'Data Management',         weight: 32 },
