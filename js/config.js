@@ -126,13 +126,13 @@ window.EXAMS = {
   },
   arcgis: {
     id: 'arcgis',
-    code: 'EAPF',
+    code: 'EAPF_2025',
     name: 'ArcGIS Pro Foundation',
-    fullName: 'Esri ArcGIS Pro Foundation (EAPF)',
-    // Real EAPF: 75 questions, 90 minutes, ~80% to pass (per third-party
-    // practice sources; Esri does not publish a numeric pass score in
-    // the public EIG). Mapped to the portal's 100-900 scaled-score band
-    // with the pass threshold anchored at 720 (= 80% of 900).
+    fullName: 'Esri ArcGIS Pro Foundation 2025 (EAPF_2025)',
+    // Official EAPF_2025: 75 questions, 90 minutes, 80% to pass, multiple
+    // choice. Esri reports pass/fail rather than a numeric scaled score,
+    // so the portal's 100-900 band anchors the pass threshold at 720
+    // (= 80% of 900) to mirror the 80% bar.
     questionCount: 75,
     timeMinutes: 90,
     passScaled: 720,
@@ -141,16 +141,16 @@ window.EXAMS = {
     // "Select TWO" items are still a legitimate study aid.
     allowedTypes: ['single', 'multi'],
     styleClass: 'arcgis',
-    // Even split — Esri does not publish official per-domain weighting
-    // in the public materials. The 6 domains track the study hub's
-    // organization and the in-pool question distribution.
+    // The four domains and weights mirror Esri's published EAPF_2025 Exam
+    // Information Guide. NOTE: the question pool is currently light on
+    // Mapping & Visualization items (~19) relative to the 36% weight, so
+    // the engine backfills the remaining slots from other domains. Author
+    // more D1 items to fully honor the 36% emphasis.
     domains: [
-      { id: 'D1', name: 'Geographic Data Models',           weight: 17 },
-      { id: 'D2', name: 'Coordinate Systems & Projections', weight: 17 },
-      { id: 'D3', name: 'Cartography & Symbology',          weight: 17 },
-      { id: 'D4', name: 'Spatial Analysis & Geoprocessing', weight: 17 },
-      { id: 'D5', name: 'ArcGIS Online & Web GIS',          weight: 16 },
-      { id: 'D6', name: 'Geodatabases, Metadata & Sharing', weight: 16 }
+      { id: 'D1', name: 'Mapping & Visualization', weight: 36 },
+      { id: 'D2', name: 'Data Management',         weight: 32 },
+      { id: 'D3', name: 'Performing Analysis',     weight: 20 },
+      { id: 'D4', name: 'Layouts & Sharing',       weight: 12 }
     ]
   }
 };
